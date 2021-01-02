@@ -14,6 +14,32 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: accounts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.accounts (
+    id uuid NOT NULL,
+    created timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "accountName" text NOT NULL,
+    "apiKey" text,
+    password text
+);
+
+
+--
+-- Name: accountsFields; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."accountsFields" (
+    id uuid NOT NULL,
+    created timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "accountId" uuid NOT NULL,
+    name text NOT NULL,
+    value text[] NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -23,28 +49,19 @@ CREATE TABLE public.schema_migrations (
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
+-- Name: accountsFields accountsFields_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-CREATE TABLE public.users (
-    id uuid NOT NULL,
-    created timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    username text NOT NULL,
-    password text NOT NULL
-);
+ALTER TABLE ONLY public."accountsFields"
+    ADD CONSTRAINT "accountsFields_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: usersFields; Type: TABLE; Schema: public; Owner: -
+-- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-CREATE TABLE public."usersFields" (
-    id uuid NOT NULL,
-    created timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "userId" uuid NOT NULL,
-    name text NOT NULL,
-    value text[] NOT NULL
-);
+ALTER TABLE ONLY public.accounts
+    ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
 
 
 --
@@ -56,34 +73,25 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: usersFields usersFields_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: idx_accountname; Type: INDEX; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."usersFields"
-    ADD CONSTRAINT "usersFields_pkey" PRIMARY KEY (id);
-
-
---
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+CREATE UNIQUE INDEX idx_accountname ON public.accounts USING btree ("accountName");
 
 
 --
--- Name: idx_usersfields; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_accountsfields; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_usersfields ON public."usersFields" USING btree ("userId", name);
+CREATE UNIQUE INDEX idx_accountsfields ON public."accountsFields" USING btree ("accountId", name);
 
 
 --
--- Name: usersFields usersFields_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: accountsFields accountsFields_accountId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."usersFields"
-    ADD CONSTRAINT "usersFields_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+ALTER TABLE ONLY public."accountsFields"
+    ADD CONSTRAINT "accountsFields_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES public.accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --

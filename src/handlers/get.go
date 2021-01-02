@@ -6,12 +6,12 @@ import (
 )
 
 // Hello handler
-func Hello(c *fiber.Ctx) error {
+func (h Handlers) Hello(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
 
-// UserGet handler
-func UserGet(c *fiber.Ctx) error {
-	log.WithFields(log.Fields{"userID": c.Params("userID")}).Debug("GETing user")
-	return c.SendString("USER ffs")
+// AccountGet handler
+func (h Handlers) AccountGet(c *fiber.Ctx) error {
+	log.WithFields(log.Fields{"accountID": c.Params("accountID")}).Debug("GETing account")
+	return c.SendString("Account ffs")
 }
