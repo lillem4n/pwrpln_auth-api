@@ -5,8 +5,8 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-// Account is an account in the system
-type Account struct {
+// CreatedAccount is a newly created account in the system
+type CreatedAccount struct {
 	ID          uuid.UUID `json:"id"`
 	AccountName string    `json:"accountName"`
 	APIKey      string    `json:"apiKey"`

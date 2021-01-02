@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -27,8 +26,6 @@ func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 			{Error: err.Error()},
 		})
 	}
-
-	fmt.Println(accountInput)
 
 	var errors []ResJSONError
 
