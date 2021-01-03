@@ -20,7 +20,7 @@ SET default_table_access_method = heap;
 CREATE TABLE public.accounts (
     id uuid NOT NULL,
     created timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "accountName" text NOT NULL,
+    name text NOT NULL,
     "apiKey" text,
     password text
 );
@@ -36,6 +36,17 @@ CREATE TABLE public."accountsFields" (
     "accountId" uuid NOT NULL,
     name text NOT NULL,
     value text[] NOT NULL
+);
+
+
+--
+-- Name: renewalTokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."renewalTokens" (
+    "accountId" uuid NOT NULL,
+    exp timestamp without time zone DEFAULT (CURRENT_TIMESTAMP + '24:00:00'::interval) NOT NULL,
+    token character(60) NOT NULL
 );
 
 
@@ -76,7 +87,7 @@ ALTER TABLE ONLY public.schema_migrations
 -- Name: idx_accountname; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_accountname ON public.accounts USING btree ("accountName");
+CREATE UNIQUE INDEX idx_accountname ON public.accounts USING btree (name);
 
 
 --
@@ -87,11 +98,40 @@ CREATE UNIQUE INDEX idx_accountsfields ON public."accountsFields" USING btree ("
 
 
 --
+-- Name: idx_renewaltokensaccountid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_renewaltokensaccountid ON public."renewalTokens" USING btree ("accountId");
+
+
+--
+-- Name: idx_renewaltokensexp; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_renewaltokensexp ON public."renewalTokens" USING btree (exp);
+
+
+--
+-- Name: idx_renewaltokenstoken; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_renewaltokenstoken ON public."renewalTokens" USING btree (token);
+
+
+--
 -- Name: accountsFields accountsFields_accountId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public."accountsFields"
     ADD CONSTRAINT "accountsFields_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES public.accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- Name: renewalTokens renewalTokens_accountId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."renewalTokens"
+    ADD CONSTRAINT "renewalTokens_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES public.accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 --

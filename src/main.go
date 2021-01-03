@@ -20,10 +20,11 @@ func createAdminAccount(Db db.Db) {
 		log.Fatal("Could not create new Uuid, err: " + uuidErr.Error())
 	}
 	_, adminAccountErr := Db.AccountCreate(db.AccountCreateInput{
-		ID:          adminAccountID,
-		AccountName: "admin",
-		APIKey:      os.Getenv("ADMIN_API_KEY"),
-		Password:    "",
+		ID:       adminAccountID,
+		Name:     "admin",
+		APIKey:   os.Getenv("ADMIN_API_KEY"),
+		Password: "",
+		Fields:   []db.AccountCreateInputFields{{Name: "role", Values: []string{"admin"}}},
 	})
 	if adminAccountErr != nil && strings.HasPrefix(adminAccountErr.Error(), "ERROR: duplicate key") {
 		log.Info("Admin account already created, nothing written to database")
@@ -42,6 +43,14 @@ func main() {
 	// log.SetReportCaller(true)
 	log.SetLevel(log.DebugLevel)
 
+	if os.Getenv("JWT_SHARED_SECRET") == "changeMe" {
+		log.Fatal("You must change JWT_SHARED_SECRET in .env")
+	}
+	if os.Getenv("ADMIN_API_KEY") == "changeMe" {
+		log.Fatal("You must change ADMIN_API_KEY in .env")
+	}
+	jwtKey := []byte(os.Getenv("JWT_SHARED_SECRET"))
+
 	dbPool, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal("Failed to open DB connection: ", err)
@@ -53,9 +62,12 @@ func main() {
 	app := fiber.New()
 
 	Db := db.Db{DbPool: dbPool}
-	handlers := h.Handlers{Db: Db}
+	handlers := h.Handlers{Db: Db, JwtKey: jwtKey}
 
 	createAdminAccount(Db)
+
+	// Log all requests
+	app.Use(handlers.Log)
 
 	// Always require application/json
 	app.Use(handlers.RequireJSON)

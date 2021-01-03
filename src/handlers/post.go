@@ -13,10 +13,15 @@ import (
 
 // AccountCreate creates a new account
 func (h Handlers) AccountCreate(c *fiber.Ctx) error {
+	authErr := h.RequireAdminRole(c)
+	if authErr != nil {
+		return c.Status(403).JSON([]ResJSONError{{Error: authErr.Error()}})
+	}
+
 	type AccountInput struct {
-		AccountName string                        `json:"accountName"`
-		Password    string                        `json:"password"`
-		Fields      []db.AccountCreateInputFields `json:"fields"`
+		Name     string                        `json:"name"`
+		Password string                        `json:"password"`
+		Fields   []db.AccountCreateInputFields `json:"fields"`
 	}
 
 	accountInput := new(AccountInput)
@@ -29,8 +34,8 @@ func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 
 	var errors []ResJSONError
 
-	if accountInput.AccountName == "" {
-		errors = append(errors, ResJSONError{Error: "Can not be empty", Field: "accountName"})
+	if accountInput.Name == "" {
+		errors = append(errors, ResJSONError{Error: "Can not be empty", Field: "name"})
 	}
 
 	if len(errors) != 0 {
@@ -47,14 +52,12 @@ func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 		log.Fatal("Could not hash password, err: " + pwdErr.Error())
 	}
 
-	apiKey := utils.RandString(60)
-
 	createdAccount, err := h.Db.AccountCreate(db.AccountCreateInput{
-		ID:          newAccountID,
-		AccountName: accountInput.AccountName,
-		APIKey:      apiKey,
-		Fields:      accountInput.Fields,
-		Password:    hashedPwd,
+		ID:       newAccountID,
+		Name:     accountInput.Name,
+		APIKey:   utils.RandString(60),
+		Fields:   accountInput.Fields,
+		Password: hashedPwd,
 	})
 
 	if err != nil {
@@ -69,5 +72,17 @@ func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 
 // AccountAuthAPIKey auths an APIKey
 func (h Handlers) AccountAuthAPIKey(c *fiber.Ctx) error {
-	return c.Status(200).JSON("key höhö")
+	inputAPIKey := string(c.Request().Body())
+	inputAPIKey = inputAPIKey[1 : len(inputAPIKey)-1]
+
+	resolvedAccount, accountErr := h.Db.AccountGet("", inputAPIKey)
+	if accountErr != nil {
+		if accountErr.Error() == "no rows in result set" {
+			return c.Status(403).JSON([]ResJSONError{{Error: "Invalid credentials"}})
+		}
+		log.Error("Something went wrong when trying to fetch account")
+		return c.Status(500).JSON([]ResJSONError{{Error: "Something went wrong when trying to fetch account"}})
+	}
+
+	return h.returnTokens(resolvedAccount, c)
 }
