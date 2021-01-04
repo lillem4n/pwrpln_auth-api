@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 // Hello handler
@@ -12,6 +11,18 @@ func (h Handlers) Hello(c *fiber.Ctx) error {
 
 // AccountGet handler
 func (h Handlers) AccountGet(c *fiber.Ctx) error {
-	log.WithFields(log.Fields{"accountID": c.Params("accountID")}).Debug("GETing account")
-	return c.SendString("Account ffs")
+	accountID := c.Params("accountID")
+	// logContext := log.WithFields(log.Fields{"accountID": accountID})
+
+	authErr := h.RequireAdminRoleOrAccountID(c, accountID)
+	if authErr != nil {
+		return c.Status(403).JSON([]ResJSONError{{Error: authErr.Error()}})
+	}
+
+	account, accountErr := h.Db.AccountGet(accountID, "")
+	if accountErr != nil {
+		return c.Status(500).JSON([]ResJSONError{{Error: accountErr.Error()}})
+	}
+
+	return c.JSON(account)
 }

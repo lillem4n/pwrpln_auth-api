@@ -113,3 +113,37 @@ func (h Handlers) RequireAdminRole(c *fiber.Ctx) error {
 
 	return errors.New("No \"admin\" role found on account")
 }
+
+// RequireAdminRoleOrAccountID returns nil if no error is found
+func (h Handlers) RequireAdminRoleOrAccountID(c *fiber.Ctx, accountID string) error {
+	headers := h.parseHeaders(c)
+
+	if headers["Authorization"] == "" {
+		return errors.New("Authorization header is missing")
+	}
+
+	claims, claimsErr := h.parseJWT(headers["Authorization"])
+	if claimsErr != nil {
+		return claimsErr
+	}
+
+	if claims.AccountID == accountID {
+		return nil
+	}
+
+	if claims.AccountFields == nil {
+		return errors.New("AccountID does not match and account have no fields at all")
+	}
+
+	if claims.AccountFields["role"] == nil {
+		return errors.New("AccountID does not match and account have no field named \"role\"")
+	}
+
+	for _, role := range claims.AccountFields["role"] {
+		if role == "admin" {
+			return nil
+		}
+	}
+
+	return errors.New("AccountID does not match and no \"admin\" role found on account")
+}
