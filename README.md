@@ -10,6 +10,10 @@ Example of setting up a postgres SQL server:
 
 `docker run -d --name postgres --network=host -e POSTGRES_PASSWORD=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=pwrlpln postgres`
 
+If you are on of those poor people runnin macOS you must use this one to start a postgres server :(
+
+`docker run -d --name pwrpln-postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=pwrlpln postgres`
+
 ## Admin account
 
 On first startup with a clean database, an account with name "admin" and the field "role" with a value "admin" is created with no password, using the API Key from ADMIN_API_KEY in the .env file.
