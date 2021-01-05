@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
-	"gitlab.larvit.se/power-plan/auth/src/utils"
 )
 
 // AccountCreate writes a user to database
@@ -111,22 +110,4 @@ func (d Db) AccountGet(accountID string, APIKey string, Name string) (Account, e
 	}
 
 	return account, nil
-}
-
-// RenewalTokenGet obtain a new renewal token
-func (d Db) RenewalTokenGet(accountID string) (string, error) {
-	logContext := log.WithFields(log.Fields{"accountID": accountID})
-
-	logContext.Debug("Creating new renewal token")
-
-	newToken := utils.RandString(60)
-
-	insertSQL := "INSERT INTO \"renewalTokens\" (\"accountId\",token) VALUES($1,$2);"
-	_, insertErr := d.DbPool.Exec(context.Background(), insertSQL, accountID, newToken)
-	if insertErr != nil {
-		logContext.Error("Could not insert into database table \"renewalTokens\", err: " + insertErr.Error())
-		return "", insertErr
-	}
-
-	return newToken, nil
 }

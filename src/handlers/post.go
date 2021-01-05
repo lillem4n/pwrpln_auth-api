@@ -114,3 +114,32 @@ func (h Handlers) AccountAuthPassword(c *fiber.Ctx) error {
 
 	return h.returnTokens(resolvedAccount, c)
 }
+
+// TokenRenew creates a new renewal token and JWT from an old renewal token
+func (h Handlers) TokenRenew(c *fiber.Ctx) error {
+	inputToken := string(c.Request().Body())
+	inputToken = inputToken[1 : len(inputToken)-1]
+
+	foundAccountID, err := h.Db.RenewalTokenGet(inputToken)
+	if err != nil {
+		return c.Status(500).JSON([]ResJSONError{{Error: err.Error()}})
+	} else if foundAccountID == "" {
+		return c.Status(403).JSON([]ResJSONError{{Error: "Invalid token"}})
+	}
+
+	resolvedAccount, accountErr := h.Db.AccountGet(foundAccountID, "", "")
+	if accountErr != nil {
+		if accountErr.Error() == "no rows in result set" {
+			return c.Status(500).JSON([]ResJSONError{{Error: "Database missmatch. Token found, but account is missing."}})
+		}
+		log.Error("Something went wrong when trying to fetch account")
+		return c.Status(500).JSON([]ResJSONError{{Error: "Something went wrong when trying to fetch account"}})
+	}
+
+	rmErr := h.Db.RenewalTokenRm(inputToken)
+	if rmErr != nil {
+		return c.Status(500).JSON([]ResJSONError{{Error: "Could not remove old token, err: " + rmErr.Error()}})
+	}
+
+	return h.returnTokens(resolvedAccount, c)
+}

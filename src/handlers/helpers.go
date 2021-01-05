@@ -30,7 +30,7 @@ func (h Handlers) returnTokens(account db.Account, c *fiber.Ctx) error {
 		return c.Status(500).JSON([]ResJSONError{{Error: "Could not create JWT token string"}})
 	}
 
-	renewalToken, renewalTokenErr := h.Db.RenewalTokenGet(account.ID.String())
+	renewalToken, renewalTokenErr := h.Db.RenewalTokenCreate(account.ID.String())
 	if renewalTokenErr != nil {
 		log.Error("Could not create renewal token, err: " + renewalTokenErr.Error())
 		return c.Status(500).JSON([]ResJSONError{{Error: "Could not create renewal token"}})
