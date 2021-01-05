@@ -58,7 +58,7 @@ func (d Db) AccountCreate(input AccountCreateInput) (CreatedAccount, error) {
 }
 
 // AccountGet fetches an account from the database
-func (d Db) AccountGet(accountID string, APIKey string) (Account, error) {
+func (d Db) AccountGet(accountID string, APIKey string, Name string) (Account, error) {
 	logContext := log.WithFields(log.Fields{
 		"accountID": accountID,
 		"APIKey":    len(APIKey),
@@ -75,6 +75,9 @@ func (d Db) AccountGet(accountID string, APIKey string) (Account, error) {
 	} else if APIKey != "" {
 		accountSQL = accountSQL + "\"apiKey\" = $1"
 		searchParam = APIKey
+	} else if Name != "" {
+		accountSQL = accountSQL + "name = $1"
+		searchParam = Name
 	}
 
 	accountErr := d.DbPool.QueryRow(context.Background(), accountSQL, searchParam).Scan(&account.ID, &account.Created, &account.Name, &account.Password)
@@ -114,7 +117,7 @@ func (d Db) AccountGet(accountID string, APIKey string) (Account, error) {
 func (d Db) RenewalTokenGet(accountID string) (string, error) {
 	logContext := log.WithFields(log.Fields{"accountID": accountID})
 
-	logContext.Debug("Createing new renewal token")
+	logContext.Debug("Creating new renewal token")
 
 	newToken := utils.RandString(60)
 

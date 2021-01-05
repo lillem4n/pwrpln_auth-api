@@ -19,7 +19,7 @@ func (h Handlers) AccountGet(c *fiber.Ctx) error {
 		return c.Status(403).JSON([]ResJSONError{{Error: authErr.Error()}})
 	}
 
-	account, accountErr := h.Db.AccountGet(accountID, "")
+	account, accountErr := h.Db.AccountGet(accountID, "", "")
 	if accountErr != nil {
 		return c.Status(500).JSON([]ResJSONError{{Error: accountErr.Error()}})
 	}

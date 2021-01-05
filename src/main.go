@@ -76,6 +76,7 @@ func main() {
 	app.Get("/account/:accountID", handlers.AccountGet)
 	app.Post("/account", handlers.AccountCreate)
 	app.Post("/auth/api-key", handlers.AccountAuthAPIKey)
+	app.Post("/auth/password", handlers.AccountAuthPassword)
 
 	log.WithFields(log.Fields{"WEB_BIND_HOST": os.Getenv("WEB_BIND_HOST")}).Info("Trying to start web server")
 
