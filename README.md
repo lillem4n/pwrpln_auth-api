@@ -26,3 +26,4 @@ The account field "role" is a bit special, in that if it contains "admin" as one
 
 Obtain an admin GWT: `curl -d '"api-key-goes-here"' -H "Content-Type: application/json" -i http://localhost:4000/auth/api-key`
 Use a bearer token to make a call: `curl -H "Content-Type: application/json" -H "Authorization: bearer your-JWT-token-goes-here" -i http://localhost:4000/account/{accountID}`
+Create account: `curl -d '{"name": "Bosse", "password":"Hemligt", "fields": [{ "name":"role", "values":["user"]}]}' -H "Content-Type: application/json" -H "Authorization: bearer your-JWT-token-goes-here" -i http://localhost:4000/account`
