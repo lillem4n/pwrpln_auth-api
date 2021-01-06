@@ -8,15 +8,15 @@ Done using [dbmate](https://github.com/amacneil/dbmate). Db stuff is stored in `
 
 Example of running the migrations:
 
-`docker run --rm -it -e DATABASE_URL="postgres://postgres:postgres@127.0.0.1:5432/pwrpln?sslmode=disable" --network=host -v "$(pwd)/db:/db" amacneil/dbmate up`
+`docker run --rm -it -e DATABASE_URL="postgres://postgres:postgres@127.0.0.1:5432/auth?sslmode=disable" --network=host -v "$(pwd)/db:/db" amacneil/dbmate up`
 
 Example of setting up a postgres SQL server:
 
-`docker run -d --name postgres --network=host -e POSTGRES_PASSWORD=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=pwrlpln postgres`
+`docker run -d --name postgres --network=host -e POSTGRES_PASSWORD=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=auth postgres`
 
 If you are on of those poor people runnin macOS you must use this one to start a postgres server :(
 
-`docker run -d --name pwrpln-postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=pwrlpln postgres`
+`docker run -d --name pwrpln-postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=auth postgres`
 
 ## Admin account
 
