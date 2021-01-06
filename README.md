@@ -1,3 +1,7 @@
+# Auth API
+
+This is a tiny http API for auth. Register accounts, auth with api-key or name/password, renew JWT tokens...
+
 ## Databaes migration
 
 Done using [dbmate](https://github.com/amacneil/dbmate). Db stuff is stored in `./db`.
