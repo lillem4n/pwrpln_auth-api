@@ -36,7 +36,7 @@ func createAdminAccount(Db db.Db) {
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Warn("Error loading .env file, this could be ok if the env file does not exist")
 	}
 
 	// Add this line for logging filename and line number!
