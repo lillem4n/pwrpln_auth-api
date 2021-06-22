@@ -15,6 +15,15 @@ definitions:
       name:
         type: string
     type: object
+  db.AccountCreateInputFields:
+    properties:
+      name:
+        type: string
+      values:
+        items:
+          type: string
+        type: array
+    type: object
   db.CreatedAccount:
     properties:
       apiKey:
@@ -24,6 +33,24 @@ definitions:
       name:
         type: string
     type: object
+  handlers.AccountInput:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/db.AccountCreateInputFields'
+        type: array
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  handlers.AuthInput:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    type: object
   handlers.ResJSONError:
     properties:
       error:
@@ -31,12 +58,18 @@ definitions:
       field:
         type: string
     type: object
-host: localhost:3000
+  handlers.ResToken:
+    properties:
+      jwt:
+        type: string
+      renewalToken:
+        type: string
+    type: object
 info:
   contact:
     email: lilleman@larvit.se
     name: Power Plan
-    url: https://http://pwrpln.com/
+    url: https://pwrpln.com/
   description: This is a tiny http API for auth. Register accounts, auth with api-key
     or name/password, renew JWT tokens...
   license:
@@ -48,8 +81,18 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create an account
+      description: |-
+        Requires Authorization-header with role "admin".
+        Example: Authorization: bearer xxx
+        Where "xxx" is a valid JWT token
       operationId: account-create
+      parameters:
+      - description: Account object to be written to database
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AccountInput'
       produces:
       - application/json
       responses:
@@ -60,25 +103,36 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "415":
           description: Unsupported Media Type
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
       summary: Create an account
   /account/{id}:
     get:
       consumes:
       - application/json
-      description: Get account
+      description: |-
+        Requires Authorization-header with either role "admin" or with a matching account id.
+        Example: Authorization: bearer xxx
+        Where "xxx" is a valid JWT token
       operationId: get-account-by-id
       parameters:
       - description: Account ID
@@ -96,49 +150,73 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "415":
           description: Unsupported Media Type
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
-      summary: Get account
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+      summary: Get account by id
   /auth/api-key:
     post:
       consumes:
       - application/json
       description: Authenticate account by API Key
       operationId: auth-account-by-api-key
+      parameters:
+      - description: API Key as a string in JSON format (just encapsulate the string
+          with \
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/db.Account'
+            $ref: '#/definitions/handlers.ResToken'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "415":
           description: Unsupported Media Type
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
       summary: Authenticate account by API Key
   /auth/password:
     post:
@@ -146,29 +224,44 @@ paths:
       - application/json
       description: Authenticate account by Password
       operationId: auth-account-by-password
+      parameters:
+      - description: Name and password to auth by
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AuthInput'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/db.Account'
+            $ref: '#/definitions/handlers.ResToken'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "415":
           description: Unsupported Media Type
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
       summary: Authenticate account by Password
   /renew-token:
     post:
@@ -176,28 +269,44 @@ paths:
       - application/json
       description: Renew token
       operationId: renew-token
+      parameters:
+      - description: Renewal token as a string in JSON format (just encapsulate the
+          string with \
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/db.Account'
+            $ref: '#/definitions/handlers.ResToken'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "415":
           description: Unsupported Media Type
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.ResJSONError'
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
       summary: Renew token
 swagger: "2.0"

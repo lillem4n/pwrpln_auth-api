@@ -44,12 +44,11 @@ func createAdminAccount(Db db.Db, log *zap.SugaredLogger) {
 // @description This is a tiny http API for auth. Register accounts, auth with api-key or name/password, renew JWT tokens...
 
 // @contact.name Power Plan
-// @contact.url https://http://pwrpln.com/
+// @contact.url https://pwrpln.com/
 // @contact.email lilleman@larvit.se
 
 // @license.name MIT
 
-// @host localhost:3000
 // @BasePath /
 func main() {
 	log := utils.GetLog()

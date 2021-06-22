@@ -20,7 +20,7 @@ var doc = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "Power Plan",
-            "url": "https://http://pwrpln.com/",
+            "url": "https://pwrpln.com/",
             "email": "lilleman@larvit.se"
         },
         "license": {
@@ -33,7 +33,7 @@ var doc = `{
     "paths": {
         "/account": {
             "post": {
-                "description": "Create an account",
+                "description": "Requires Authorization-header with role \"admin\".\nExample: Authorization: bearer xxx\nWhere \"xxx\" is a valid JWT token",
                 "consumes": [
                     "application/json"
                 ],
@@ -42,6 +42,17 @@ var doc = `{
                 ],
                 "summary": "Create an account",
                 "operationId": "account-create",
+                "parameters": [
+                    {
+                        "description": "Account object to be written to database",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.AccountInput"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -52,25 +63,37 @@ var doc = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "415": {
                         "description": "Unsupported Media Type",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     }
                 }
@@ -78,14 +101,14 @@ var doc = `{
         },
         "/account/{id}": {
             "get": {
-                "description": "Get account",
+                "description": "Requires Authorization-header with either role \"admin\" or with a matching account id.\nExample: Authorization: bearer xxx\nWhere \"xxx\" is a valid JWT token",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Get account",
+                "summary": "Get account by id",
                 "operationId": "get-account-by-id",
                 "parameters": [
                     {
@@ -106,25 +129,37 @@ var doc = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "415": {
                         "description": "Unsupported Media Type",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     }
                 }
@@ -141,35 +176,58 @@ var doc = `{
                 ],
                 "summary": "Authenticate account by API Key",
                 "operationId": "auth-account-by-api-key",
+                "parameters": [
+                    {
+                        "description": "API Key as a string in JSON format (just encapsulate the string with \\",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/db.Account"
+                            "$ref": "#/definitions/handlers.ResToken"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "415": {
                         "description": "Unsupported Media Type",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     }
                 }
@@ -186,35 +244,58 @@ var doc = `{
                 ],
                 "summary": "Authenticate account by Password",
                 "operationId": "auth-account-by-password",
+                "parameters": [
+                    {
+                        "description": "Name and password to auth by",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.AuthInput"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/db.Account"
+                            "$ref": "#/definitions/handlers.ResToken"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "415": {
                         "description": "Unsupported Media Type",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     }
                 }
@@ -231,35 +312,58 @@ var doc = `{
                 ],
                 "summary": "Renew token",
                 "operationId": "renew-token",
+                "parameters": [
+                    {
+                        "description": "Renewal token as a string in JSON format (just encapsulate the string with \\",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/db.Account"
+                            "$ref": "#/definitions/handlers.ResToken"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "415": {
                         "description": "Unsupported Media Type",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ResJSONError"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     }
                 }
@@ -290,6 +394,20 @@ var doc = `{
                 }
             }
         },
+        "db.AccountCreateInputFields": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "db.CreatedAccount": {
             "type": "object",
             "properties": {
@@ -304,6 +422,34 @@ var doc = `{
                 }
             }
         },
+        "handlers.AccountInput": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.AccountCreateInputFields"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.AuthInput": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.ResJSONError": {
             "type": "object",
             "properties": {
@@ -311,6 +457,17 @@ var doc = `{
                     "type": "string"
                 },
                 "field": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.ResToken": {
+            "type": "object",
+            "properties": {
+                "jwt": {
+                    "type": "string"
+                },
+                "renewalToken": {
                     "type": "string"
                 }
             }
@@ -330,7 +487,7 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "0.1",
-	Host:        "localhost:3000",
+	Host:        "",
 	BasePath:    "/",
 	Schemes:     []string{},
 	Title:       "JWT Auth API",

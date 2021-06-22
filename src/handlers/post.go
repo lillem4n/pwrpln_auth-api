@@ -9,28 +9,36 @@ import (
 	"gitlab.larvit.se/power-plan/auth/src/utils"
 )
 
+type AccountInput struct {
+	Name     string                        `json:"name"`
+	Password string                        `json:"password"`
+	Fields   []db.AccountCreateInputFields `json:"fields"`
+}
+
+type AuthInput struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
 // AccountCreate godoc
 // @Summary Create an account
-// @Description Create an account
+// @Description Requires Authorization-header with role "admin".
+// @Description Example: Authorization: bearer xxx
+// @Description Where "xxx" is a valid JWT token
 // @ID account-create
 // @Accept  json
 // @Produce  json
+// @Param body body AccountInput true "Account object to be written to database"
 // @Success 200 {object} db.CreatedAccount
-// @Failure 401 {object} ResJSONError
-// @Failure 403 {object} ResJSONError
-// @Failure 415 {object} ResJSONError
-// @Failure 500 {object} ResJSONError
+// @Failure 401 {object} []ResJSONError
+// @Failure 403 {object} []ResJSONError
+// @Failure 415 {object} []ResJSONError
+// @Failure 500 {object} []ResJSONError
 // @Router /account [post]
 func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 	authErr := h.RequireAdminRole(c)
 	if authErr != nil {
 		return c.Status(403).JSON([]ResJSONError{{Error: authErr.Error()}})
-	}
-
-	type AccountInput struct {
-		Name     string                        `json:"name"`
-		Password string                        `json:"password"`
-		Fields   []db.AccountCreateInputFields `json:"fields"`
 	}
 
 	accountInput := new(AccountInput)
@@ -85,11 +93,12 @@ func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 // @ID auth-account-by-api-key
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} db.Account
-// @Failure 401 {object} ResJSONError
-// @Failure 403 {object} ResJSONError
-// @Failure 415 {object} ResJSONError
-// @Failure 500 {object} ResJSONError
+// @Param body body string true "API Key as a string in JSON format (just encapsulate the string with \" and you're fine)"
+// @Success 200 {object} ResToken
+// @Failure 401 {object} []ResJSONError
+// @Failure 403 {object} []ResJSONError
+// @Failure 415 {object} []ResJSONError
+// @Failure 500 {object} []ResJSONError
 // @Router /auth/api-key [post]
 func (h Handlers) AccountAuthAPIKey(c *fiber.Ctx) error {
 	inputAPIKey := string(c.Request().Body())
@@ -113,18 +122,14 @@ func (h Handlers) AccountAuthAPIKey(c *fiber.Ctx) error {
 // @ID auth-account-by-password
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} db.Account
-// @Failure 401 {object} ResJSONError
-// @Failure 403 {object} ResJSONError
-// @Failure 415 {object} ResJSONError
-// @Failure 500 {object} ResJSONError
+// @Param body body AuthInput true "Name and password to auth by"
+// @Success 200 {object} ResToken
+// @Failure 401 {object} []ResJSONError
+// @Failure 403 {object} []ResJSONError
+// @Failure 415 {object} []ResJSONError
+// @Failure 500 {object} []ResJSONError
 // @Router /auth/password [post]
 func (h Handlers) AccountAuthPassword(c *fiber.Ctx) error {
-	type AuthInput struct {
-		Name     string `json:"name"`
-		Password string `json:"password"`
-	}
-
 	authInput := new(AuthInput)
 	if err := c.BodyParser(authInput); err != nil {
 		return c.Status(400).JSON([]ResJSONError{{Error: err.Error()}})
@@ -152,11 +157,12 @@ func (h Handlers) AccountAuthPassword(c *fiber.Ctx) error {
 // @ID renew-token
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} db.Account
-// @Failure 401 {object} ResJSONError
-// @Failure 403 {object} ResJSONError
-// @Failure 415 {object} ResJSONError
-// @Failure 500 {object} ResJSONError
+// @Param body body string true "Renewal token as a string in JSON format (just encapsulate the string with \" and you're fine)"
+// @Success 200 {object} ResToken
+// @Failure 401 {object} []ResJSONError
+// @Failure 403 {object} []ResJSONError
+// @Failure 415 {object} []ResJSONError
+// @Failure 500 {object} []ResJSONError
 // @Router /renew-token [post]
 func (h Handlers) RenewToken(c *fiber.Ctx) error {
 	inputToken := string(c.Request().Body())

@@ -5,17 +5,19 @@ import (
 )
 
 // AccountGet godoc
-// @Summary Get account
-// @Description Get account
+// @Summary Get account by id
+// @Description Requires Authorization-header with either role "admin" or with a matching account id.
+// @Description Example: Authorization: bearer xxx
+// @Description Where "xxx" is a valid JWT token
 // @ID get-account-by-id
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Account ID"
 // @Success 200 {object} db.Account
-// @Failure 401 {object} ResJSONError
-// @Failure 403 {object} ResJSONError
-// @Failure 415 {object} ResJSONError
-// @Failure 500 {object} ResJSONError
+// @Failure 401 {object} []ResJSONError
+// @Failure 403 {object} []ResJSONError
+// @Failure 415 {object} []ResJSONError
+// @Failure 500 {object} []ResJSONError
 // @Router /account/{id} [get]
 func (h Handlers) AccountGet(c *fiber.Ctx) error {
 	accountID := c.Params("accountID")
