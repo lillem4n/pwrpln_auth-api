@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 )
 
 // AccountCreate writes a user to database
@@ -15,38 +14,31 @@ func (d Db) AccountCreate(input AccountCreateInput) (CreatedAccount, error) {
 	_, err := d.DbPool.Exec(context.Background(), accountSQL, input.ID, input.Name, input.APIKey, input.Password)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-			log.WithFields(log.Fields{"name": input.Name}).Debug("Duplicate name in accounts database")
+			d.Log.Debug("Duplicate name in accounts database", "name", input.Name)
 		} else {
-			log.Error("Database error when trying to add account: " + err.Error())
+			d.Log.Error("Database error when trying to add account", "err", err.Error())
 		}
 
 		return CreatedAccount{}, err
 	}
 
-	log.WithFields(log.Fields{
-		"id":   input.ID,
-		"name": input.Name,
-	}).Info("Added account to database")
+	d.Log.Info("Added account to database", "id", input.ID, "name", input.Name)
 
 	accountFieldsSQL := "INSERT INTO \"accountsFields\" (id, \"accountId\", name, value) VALUES($1,$2,$3,$4);"
 	for _, field := range input.Fields {
 		newFieldID, uuidErr := uuid.NewRandom()
 		if uuidErr != nil {
-			log.Fatal("Could not create new Uuid, err: " + uuidErr.Error())
+			d.Log.Fatal("Could not create new Uuid", "err", uuidErr.Error())
 		}
 
 		_, err := d.DbPool.Exec(context.Background(), accountFieldsSQL, newFieldID, input.ID, field.Name, field.Values)
 		if err != nil {
 			if strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-				log.Error("Database error when trying to account field: " + err.Error())
+				d.Log.Error("Database error when trying to account field", "err", err.Error())
 			}
 		}
 
-		log.WithFields(log.Fields{
-			"accountId":   input.ID,
-			"fieldName":   field.Name,
-			"fieldValues": field.Values,
-		}).Debug("Added account field")
+		d.Log.Debug("Added account field", "accountId", input.ID, "fieldName", field.Name, "fieldValues", field.Values)
 	}
 
 	return CreatedAccount{
@@ -58,12 +50,7 @@ func (d Db) AccountCreate(input AccountCreateInput) (CreatedAccount, error) {
 
 // AccountGet fetches an account from the database
 func (d Db) AccountGet(accountID string, APIKey string, Name string) (Account, error) {
-	logContext := log.WithFields(log.Fields{
-		"accountID": accountID,
-		"APIKey":    len(APIKey),
-	})
-
-	logContext.Debug("Trying to get account")
+	d.Log.Debug("Trying to get account", "accountID", accountID, "len(APIKey)", len(APIKey))
 
 	var account Account
 	var searchParam string
@@ -82,18 +69,18 @@ func (d Db) AccountGet(accountID string, APIKey string, Name string) (Account, e
 	accountErr := d.DbPool.QueryRow(context.Background(), accountSQL, searchParam).Scan(&account.ID, &account.Created, &account.Name, &account.Password)
 	if accountErr != nil {
 		if accountErr.Error() == "no rows in result set" {
-			logContext.Debug("No account found")
+			d.Log.Debug("No account found", "accountID", accountID, "APIKey", len(APIKey))
 			return Account{}, accountErr
 		}
 
-		logContext.Error("Database error when fetching account, err: " + accountErr.Error())
+		d.Log.Error("Database error when fetching account", "err", accountErr.Error(), "accountID", accountID, "APIKey", len(APIKey))
 		return Account{}, accountErr
 	}
 
 	fieldsSQL := "SELECT name, value FROM \"accountsFields\" WHERE \"accountId\" = $1"
 	rows, fieldsErr := d.DbPool.Query(context.Background(), fieldsSQL, account.ID)
 	if fieldsErr != nil {
-		logContext.Error("Database error when fetching account fields, err: " + accountErr.Error())
+		d.Log.Error("Database error when fetching account fields", "err", accountErr.Error(), "accountID", accountID, "APIKey", len(APIKey))
 		return Account{}, fieldsErr
 	}
 
@@ -103,7 +90,7 @@ func (d Db) AccountGet(accountID string, APIKey string, Name string) (Account, e
 		var value []string
 		err := rows.Scan(&name, &value)
 		if err != nil {
-			logContext.Error("Could not get name or value from database row, err: " + err.Error())
+			d.Log.Error("Could not get name or value from database row", "err", err.Error(), "accountID", accountID, "APIKey", len(APIKey))
 			return Account{}, err
 		}
 		account.Fields[name] = value

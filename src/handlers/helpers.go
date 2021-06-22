@@ -7,7 +7,6 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
-	log "github.com/sirupsen/logrus"
 	"gitlab.larvit.se/power-plan/auth/src/db"
 )
 
@@ -26,13 +25,13 @@ func (h Handlers) returnTokens(account db.Account, c *fiber.Ctx) error {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(h.JwtKey)
 	if err != nil {
-		log.Error("Could not create token string, err: " + err.Error())
+		h.Log.Error("Could not create token string", "err", err.Error())
 		return c.Status(500).JSON([]ResJSONError{{Error: "Could not create JWT token string"}})
 	}
 
 	renewalToken, renewalTokenErr := h.Db.RenewalTokenCreate(account.ID.String())
 	if renewalTokenErr != nil {
-		log.Error("Could not create renewal token, err: " + renewalTokenErr.Error())
+		h.Log.Error("Could not create renewal token", "err", renewalTokenErr.Error())
 		return c.Status(500).JSON([]ResJSONError{{Error: "Could not create renewal token"}})
 	}
 
@@ -43,15 +42,14 @@ func (h Handlers) returnTokens(account db.Account, c *fiber.Ctx) error {
 }
 
 func (h Handlers) parseJWT(JWT string) (Claims, error) {
-	logContext := log.WithFields(log.Fields{"JWT": JWT})
-	logContext.Trace("Parsing JWT")
+	h.Log.Debug("Parsing JWT", "JWT", JWT)
 
-	JWT = strings.TrimPrefix(JWT, "bearer ") // Since the Authorization header should always start with "bearer "
-	logContext.WithFields(log.Fields{"TrimmedJWT": JWT}).Trace("JWT trimmed")
+	trimmedJWT := strings.TrimPrefix(JWT, "bearer ") // Since the Authorization header should always start with "bearer "
+	h.Log.Debug("JWT trimmed", "JWT", JWT, "trimmedJWT", trimmedJWT)
 
 	claims := &Claims{}
 
-	token, err := jwt.ParseWithClaims(JWT, claims, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(trimmedJWT, claims, func(token *jwt.Token) (interface{}, error) {
 		return h.JwtKey, nil
 	})
 	if err != nil {
@@ -75,7 +73,7 @@ func (h Handlers) parseHeaders(c *fiber.Ctx) map[string]string {
 		lineParts := strings.Split(line, ": ")
 
 		if len(lineParts) == 1 {
-			log.WithFields(log.Fields{"line": line}).Trace("Ignoring header line")
+			h.Log.Debug("Ignoring header line", "line", line)
 		} else {
 			headersMap[lineParts[0]] = lineParts[1]
 		}

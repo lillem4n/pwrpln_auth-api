@@ -4,12 +4,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Hello handler
-func (h Handlers) Hello(c *fiber.Ctx) error {
-	return c.SendString("Hello, World!")
-}
-
-// AccountGet handler
+// AccountGet godoc
+// @Summary Get account
+// @Description Get account
+// @ID get-account-by-id
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Account ID"
+// @Success 200 {object} db.Account
+// @Failure 401 {object} ResJSONError
+// @Failure 403 {object} ResJSONError
+// @Failure 415 {object} ResJSONError
+// @Failure 500 {object} ResJSONError
+// @Router /account/{id} [get]
 func (h Handlers) AccountGet(c *fiber.Ctx) error {
 	accountID := c.Params("accountID")
 	// logContext := log.WithFields(log.Fields{"accountID": accountID})

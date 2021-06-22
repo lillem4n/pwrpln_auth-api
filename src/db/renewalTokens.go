@@ -3,22 +3,19 @@ package db
 import (
 	"context"
 
-	log "github.com/sirupsen/logrus"
 	"gitlab.larvit.se/power-plan/auth/src/utils"
 )
 
 // RenewalTokenCreate obtain a new renewal token
 func (d Db) RenewalTokenCreate(accountID string) (string, error) {
-	logContext := log.WithFields(log.Fields{"accountID": accountID})
-
-	logContext.Debug("Creating new renewal token")
+	d.Log.Debug("Creating new renewal token", "accountID", accountID)
 
 	newToken := utils.RandString(60)
 
 	insertSQL := "INSERT INTO \"renewalTokens\" (\"accountId\",token) VALUES($1,$2);"
 	_, insertErr := d.DbPool.Exec(context.Background(), insertSQL, accountID, newToken)
 	if insertErr != nil {
-		logContext.Error("Could not insert into database table \"renewalTokens\", err: " + insertErr.Error())
+		d.Log.Error("Could not insert into database table \"renewalTokens\"", "err", insertErr.Error(), "accountID", accountID)
 		return "", insertErr
 	}
 
@@ -27,7 +24,7 @@ func (d Db) RenewalTokenCreate(accountID string) (string, error) {
 
 // RenewalTokenGet checks if a valid renewal token exists in database
 func (d Db) RenewalTokenGet(token string) (string, error) {
-	log.Debug("Trying to get a renewal token")
+	d.Log.Debug("Trying to get a renewal token")
 
 	sql := "SELECT \"accountId\" FROM \"renewalTokens\" WHERE exp >= now() AND token = $1"
 
@@ -38,7 +35,7 @@ func (d Db) RenewalTokenGet(token string) (string, error) {
 			return "", nil
 		}
 
-		log.Error("Database error when fetching renewal token, err: " + err.Error())
+		d.Log.Error("Database error when fetching renewal token", "err", err.Error())
 		return "", err
 	}
 
@@ -47,12 +44,12 @@ func (d Db) RenewalTokenGet(token string) (string, error) {
 
 // RenewalTokenRm removes a renewal token from the database
 func (d Db) RenewalTokenRm(token string) error {
-	log.Debug("Trying to remove a renewal token")
+	d.Log.Debug("Trying to remove a renewal token")
 
 	sql := "DELETE FROM \"renewalTokens\" WHERE token = $1"
 	_, err := d.DbPool.Exec(context.Background(), sql, token)
 	if err != nil {
-		log.Error("Database error when trying to remove token, err: " + err.Error())
+		d.Log.Error("Database error when trying to remove token", "err", err.Error())
 		return err
 	}
 

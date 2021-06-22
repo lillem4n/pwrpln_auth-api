@@ -3,6 +3,7 @@ package handlers
 import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"gitlab.larvit.se/power-plan/auth/src/db"
+	"go.uber.org/zap"
 )
 
 // Claims is the JWT struct
@@ -17,6 +18,7 @@ type Claims struct {
 type Handlers struct {
 	Db     db.Db
 	JwtKey []byte
+	Log    *zap.SugaredLogger
 }
 
 // ResJSONError is an error field that is used in JSON error responses

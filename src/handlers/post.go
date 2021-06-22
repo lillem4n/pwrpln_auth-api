@@ -3,15 +3,24 @@ package handlers
 import (
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"gitlab.larvit.se/power-plan/auth/src/db"
 	"gitlab.larvit.se/power-plan/auth/src/utils"
 )
 
-// AccountCreate creates a new account
+// AccountCreate godoc
+// @Summary Create an account
+// @Description Create an account
+// @ID account-create
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} db.CreatedAccount
+// @Failure 401 {object} ResJSONError
+// @Failure 403 {object} ResJSONError
+// @Failure 415 {object} ResJSONError
+// @Failure 500 {object} ResJSONError
+// @Router /account [post]
 func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 	authErr := h.RequireAdminRole(c)
 	if authErr != nil {
@@ -44,12 +53,12 @@ func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 
 	newAccountID, uuidErr := uuid.NewRandom()
 	if uuidErr != nil {
-		log.Fatal("Could not create new Uuid, err: " + uuidErr.Error())
+		h.Log.Fatal("Could not create new Uuid", "err", uuidErr.Error())
 	}
 
 	hashedPwd, pwdErr := utils.HashPassword(accountInput.Password)
 	if pwdErr != nil {
-		log.Fatal("Could not hash password, err: " + pwdErr.Error())
+		h.Log.Fatal("Could not hash password", "err", pwdErr.Error())
 	}
 
 	createdAccount, err := h.Db.AccountCreate(db.AccountCreateInput{
@@ -70,7 +79,18 @@ func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 	return c.Status(201).JSON(createdAccount)
 }
 
-// AccountAuthAPIKey auths an APIKey
+// AccountAuthAPIKey godoc
+// @Summary Authenticate account by API Key
+// @Description Authenticate account by API Key
+// @ID auth-account-by-api-key
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} db.Account
+// @Failure 401 {object} ResJSONError
+// @Failure 403 {object} ResJSONError
+// @Failure 415 {object} ResJSONError
+// @Failure 500 {object} ResJSONError
+// @Router /auth/api-key [post]
 func (h Handlers) AccountAuthAPIKey(c *fiber.Ctx) error {
 	inputAPIKey := string(c.Request().Body())
 	inputAPIKey = inputAPIKey[1 : len(inputAPIKey)-1]
@@ -80,14 +100,25 @@ func (h Handlers) AccountAuthAPIKey(c *fiber.Ctx) error {
 		if accountErr.Error() == "no rows in result set" {
 			return c.Status(403).JSON([]ResJSONError{{Error: "Invalid credentials"}})
 		}
-		log.Error("Something went wrong when trying to fetch account")
+		h.Log.Error("Something went wrong when trying to fetch account", "err", accountErr.Error())
 		return c.Status(500).JSON([]ResJSONError{{Error: "Something went wrong when trying to fetch account"}})
 	}
 
 	return h.returnTokens(resolvedAccount, c)
 }
 
-// AccountAuthPassword auths a name/password pair
+// AccountAuthPassword godoc
+// @Summary Authenticate account by Password
+// @Description Authenticate account by Password
+// @ID auth-account-by-password
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} db.Account
+// @Failure 401 {object} ResJSONError
+// @Failure 403 {object} ResJSONError
+// @Failure 415 {object} ResJSONError
+// @Failure 500 {object} ResJSONError
+// @Router /auth/password [post]
 func (h Handlers) AccountAuthPassword(c *fiber.Ctx) error {
 	type AuthInput struct {
 		Name     string `json:"name"`
@@ -115,8 +146,19 @@ func (h Handlers) AccountAuthPassword(c *fiber.Ctx) error {
 	return h.returnTokens(resolvedAccount, c)
 }
 
-// TokenRenew creates a new renewal token and JWT from an old renewal token
-func (h Handlers) TokenRenew(c *fiber.Ctx) error {
+// RenewToken godoc
+// @Summary Renew token
+// @Description Renew token
+// @ID renew-token
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} db.Account
+// @Failure 401 {object} ResJSONError
+// @Failure 403 {object} ResJSONError
+// @Failure 415 {object} ResJSONError
+// @Failure 500 {object} ResJSONError
+// @Router /renew-token [post]
+func (h Handlers) RenewToken(c *fiber.Ctx) error {
 	inputToken := string(c.Request().Body())
 	inputToken = inputToken[1 : len(inputToken)-1]
 
@@ -132,13 +174,14 @@ func (h Handlers) TokenRenew(c *fiber.Ctx) error {
 		if accountErr.Error() == "no rows in result set" {
 			return c.Status(500).JSON([]ResJSONError{{Error: "Database missmatch. Token found, but account is missing."}})
 		}
-		log.Error("Something went wrong when trying to fetch account")
+		h.Log.Error("Something went wrong when trying to fetch account", "err", accountErr.Error())
 		return c.Status(500).JSON([]ResJSONError{{Error: "Something went wrong when trying to fetch account"}})
 	}
 
 	rmErr := h.Db.RenewalTokenRm(inputToken)
 	if rmErr != nil {
-		return c.Status(500).JSON([]ResJSONError{{Error: "Could not remove old token, err: " + rmErr.Error()}})
+		h.Log.Error("Something went wrong when trying to fetch account", "err", rmErr.Error())
+		return c.Status(500).JSON([]ResJSONError{{Error: "Could not remove old token"}})
 	}
 
 	return h.returnTokens(resolvedAccount, c)
