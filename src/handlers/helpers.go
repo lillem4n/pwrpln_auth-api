@@ -73,7 +73,9 @@ func (h Handlers) parseHeaders(c *fiber.Ctx) map[string]string {
 		lineParts := strings.Split(line, ": ")
 
 		if len(lineParts) == 1 {
-			h.Log.Debug("Ignoring header line", "line", line)
+			if len(line) != 0 {
+				h.Log.Debug("Ignoring header line", "line", line)
+			}
 		} else {
 			headersMap[lineParts[0]] = lineParts[1]
 		}

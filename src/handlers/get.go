@@ -21,7 +21,6 @@ import (
 // @Router /account/{id} [get]
 func (h Handlers) AccountGet(c *fiber.Ctx) error {
 	accountID := c.Params("accountID")
-	// logContext := log.WithFields(log.Fields{"accountID": accountID})
 
 	authErr := h.RequireAdminRoleOrAccountID(c, accountID)
 	if authErr != nil {
@@ -30,7 +29,11 @@ func (h Handlers) AccountGet(c *fiber.Ctx) error {
 
 	account, accountErr := h.Db.AccountGet(accountID, "", "")
 	if accountErr != nil {
-		return c.Status(500).JSON([]ResJSONError{{Error: accountErr.Error()}})
+		if accountErr.Error() == "no rows in result set" {
+			return c.Status(404).JSON([]ResJSONError{{Error: "No account found for given accountID"}})
+		} else {
+			return c.Status(500).JSON([]ResJSONError{{Error: accountErr.Error()}})
+		}
 	}
 
 	return c.JSON(account)

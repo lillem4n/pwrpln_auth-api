@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"github.com/google/uuid"
@@ -46,6 +47,36 @@ func (d Db) AccountCreate(input AccountCreateInput) (CreatedAccount, error) {
 		Name:   input.Name,
 		APIKey: input.APIKey,
 	}, nil
+}
+
+func (d Db) AccountDel(accountID string) error {
+	d.Log.Info("Trying to delete account", "accountID", accountID)
+
+	_, renewalTokensErr := d.DbPool.Exec(context.Background(), "DELETE FROM \"renewalTokens\" WHERE \"accountId\" = $1;", accountID)
+	if renewalTokensErr != nil {
+		d.Log.Error("Could not remove renewal tokens for account", "err", renewalTokensErr.Error(), "accountID", accountID)
+		return renewalTokensErr
+	}
+
+	_, fieldsErr := d.DbPool.Exec(context.Background(), "DELETE FROM \"accountsFields\" WHERE \"accountId\" = $1;", accountID)
+	if fieldsErr != nil {
+		d.Log.Error("Could not remove account fields", "err", fieldsErr.Error(), "accountID", accountID)
+		return fieldsErr
+	}
+
+	res, err := d.DbPool.Exec(context.Background(), "DELETE FROM accounts WHERE id = $1", accountID)
+	if err != nil {
+		d.Log.Error("Could not remove account", "err", err.Error(), "accountID", accountID)
+		return err
+	}
+
+	if string(res) == "DELETE 0" {
+		d.Log.Info("Tried to delete account, but none exists", "accountID", accountID)
+		err := errors.New("No account found for given accountID")
+		return err
+	}
+
+	return nil
 }
 
 // AccountGet fetches an account from the database

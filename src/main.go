@@ -91,6 +91,7 @@ func main() {
 	app.Get("/swagger", func(c *fiber.Ctx) error { return c.Redirect("/swagger/index.html") })
 	app.Get("/swagger/*", swagger.Handler)
 
+	app.Delete("/account/:accountID", handlers.AccountDel)
 	app.Get("/account/:accountID", handlers.AccountGet)
 	app.Post("/account", handlers.AccountCreate)
 	app.Post("/auth/api-key", handlers.AccountAuthAPIKey)

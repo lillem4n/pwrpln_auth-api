@@ -96,10 +96,75 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/db.CreatedAccount'
+        "400":
+          description: Bad Request
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+        "409":
+          description: Conflict
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+        "415":
+          description: Unsupported Media Type
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+      summary: Create an account
+  /account/:id:
+    delete:
+      consumes:
+      - application/json
+      description: |-
+        Requires Authorization-header with role "admin".
+        Example: Authorization: bearer xxx
+        Where "xxx" is a valid JWT token
+      operationId: account-del
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
         "401":
           description: Unauthorized
           schema:
@@ -124,7 +189,7 @@ paths:
             items:
               $ref: '#/definitions/handlers.ResJSONError'
             type: array
-      summary: Create an account
+      summary: Delete an account
   /account/{id}:
     get:
       consumes:

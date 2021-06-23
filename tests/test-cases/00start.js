@@ -9,6 +9,4 @@ test('test-cases/00start.js: Wait for auth API to be ready', async t => {
 	const backendHealthCheck = await got(process.env.AUTH_URL, { retry: 2000 });
 
 	t.equal(backendHealthCheck.statusCode, 200, 'Auth API should answer with status code 200');
-
-	t.end();
 });
