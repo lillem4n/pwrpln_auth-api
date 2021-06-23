@@ -110,6 +110,32 @@ test('test-cases/01basic.js: Auth by username and password', async t => {
 	t.equal(userJWT.accountName, userName, 'The verified account name should match the created user');
 });
 
+test('test-cases/01basic.js: PUT /account/{id}/fields', async t => {
+	const res = await got.put(`${process.env.AUTH_URL}/account/${user.id}/fields`, {
+		headers: { 'Authorization': `bearer ${adminJWTString}`},
+		json: [
+			{
+				name: 'foo',
+				values: ['bar'],
+			},
+			{
+				name: 'role',
+				values: ['tomte'],
+			}
+		],
+		responseType: 'json',
+	});
+
+	t.equal(user.id, res.body.id, 'The responded account id should be the same as the old one');
+	t.equal(Object.keys(res.body.fields).length, 2, 'There should only be two fields in total');
+	t.equal(JSON.stringify(res.body.fields.foo), '["bar"]', 'The foo field should have values ["bar"]');
+	t.equal(JSON.stringify(res.body.fields.role), '["tomte"]', 'The role field should have values ["tomte"]');
+
+	// Overload the previous user
+	user.fields = res.body.fields;
+	user.name = res.body.name;
+});
+
 test('test-cases/01basic.js: Remove an account', async t => {
 	try {
 		// Random uuid that should not exist in the db. The chance of this existing is... small

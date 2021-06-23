@@ -97,6 +97,8 @@ func main() {
 	app.Post("/auth/api-key", handlers.AccountAuthAPIKey)
 	app.Post("/auth/password", handlers.AccountAuthPassword)
 	app.Post("/renew-token", handlers.RenewToken)
+	app.Put("/account/:accountID/fields", handlers.AccountUpdateFields)
+	// app.Put("")
 
 	log.Info("Trying to start web server", "WEB_BIND_HOST", os.Getenv("WEB_BIND_HOST"))
 

@@ -7,7 +7,7 @@ import (
 
 // AccountDel godoc
 // @Summary Delete an account
-// @Description Requires Authorization-header with role "admin".
+// @Description Requires Authorization-header with role "admin" or a matching account id
 // @Description Example: Authorization: bearer xxx
 // @Description Where "xxx" is a valid JWT token
 // @ID account-del

@@ -119,7 +119,7 @@ var doc = `{
         },
         "/account/:id": {
             "delete": {
-                "description": "Requires Authorization-header with role \"admin\".\nExample: Authorization: bearer xxx\nWhere \"xxx\" is a valid JWT token",
+                "description": "Requires Authorization-header with role \"admin\" or a matching account id\nExample: Authorization: bearer xxx\nWhere \"xxx\" is a valid JWT token",
                 "consumes": [
                     "application/json"
                 ],
@@ -164,6 +164,15 @@ var doc = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -217,6 +226,86 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/db.Account"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
+                        }
+                    },
+                    "415": {
+                        "description": "Unsupported Media Type",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account/{id}/fields": {
+            "put": {
+                "description": "Requires Authorization-header with role \"admin\".\nExample: Authorization: bearer xxx\nWhere \"xxx\" is a valid JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Update account fields",
+                "operationId": "account-update-fields",
+                "parameters": [
+                    {
+                        "description": "Fields array with objects to be written to database",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/db.AccountCreateInputFields"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/db.Account"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.ResJSONError"
+                            }
                         }
                     },
                     "401": {

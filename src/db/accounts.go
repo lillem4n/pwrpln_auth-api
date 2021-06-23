@@ -34,12 +34,12 @@ func (d Db) AccountCreate(input AccountCreateInput) (CreatedAccount, error) {
 
 		_, err := d.DbPool.Exec(context.Background(), accountFieldsSQL, newFieldID, input.ID, field.Name, field.Values)
 		if err != nil {
-			if strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-				d.Log.Error("Database error when trying to account field", "err", err.Error())
-			}
+			//if strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
+			d.Log.Error("Database error when trying to add account field", "err", err.Error(), "accountID", input.ID, "fieldName", field.Name, "fieldvalues", field.Values)
+			// }
 		}
 
-		d.Log.Debug("Added account field", "accountId", input.ID, "fieldName", field.Name, "fieldValues", field.Values)
+		d.Log.Debug("Added account field", "accountID", input.ID, "fieldName", field.Name, "fieldValues", field.Values)
 	}
 
 	return CreatedAccount{
@@ -128,4 +128,52 @@ func (d Db) AccountGet(accountID string, APIKey string, Name string) (Account, e
 	}
 
 	return account, nil
+}
+
+func (d Db) AccountUpdateFields(accountID string, fields []AccountCreateInputFields) (Account, error) {
+	// Begin database transaction
+	conn, err := d.DbPool.Acquire(context.Background())
+	if err != nil {
+		d.Log.Error("Could not acquire database connection", "err", err.Error(), "accountID", accountID)
+		return Account{}, err
+	}
+
+	tx, err := conn.Begin(context.Background())
+	if err != nil {
+		d.Log.Error("Could not begin database transaction", "err", err.Error(), "accountID", accountID)
+		return Account{}, err
+	}
+
+	// Rollback is safe to call even if the tx is already closed, so if
+	// the tx commits successfully, this is a no-op
+	defer tx.Rollback(context.Background())
+
+	_, err = tx.Exec(context.Background(), "DELETE FROM \"accountsFields\" WHERE \"accountId\" = $1;", accountID)
+	if err != nil {
+		d.Log.Error("Could not delete previous fields", "err", err.Error(), "accountID", accountID)
+		return Account{}, err
+	}
+
+	accountFieldsSQL := "INSERT INTO \"accountsFields\" (id, \"accountId\", name, value) VALUES($1,$2,$3,$4);"
+	for _, field := range fields {
+		newFieldID, err := uuid.NewRandom()
+		if err != nil {
+			d.Log.Fatal("Could not create new Uuid", "err", err.Error())
+		}
+
+		_, err = tx.Exec(context.Background(), accountFieldsSQL, newFieldID, accountID, field.Name, field.Values)
+		if err != nil {
+			d.Log.Error("Database error when trying to add account field", "err", err.Error(), "accountID", accountID, "fieldName", field.Name, "fieldvalues", field.Values)
+		}
+
+		d.Log.Debug("Added account field", "accountID", accountID, "fieldName", field.Name, "fieldValues", field.Values)
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		d.Log.Error("Database error when tying to commit", "err", err.Error())
+		return Account{}, err
+	}
+
+	return d.AccountGet(accountID, "", "")
 }
