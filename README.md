@@ -2,6 +2,14 @@
 
 This is a tiny http API for auth. Register accounts, auth with api-key or name/password, renew JWT tokens...
 
+## Quick start with docker compose
+
+Migrate database: `docker-compose run --rm db-migrations`
+
+Run tests: `docker-compose run --rm tests`
+
+Start the service (on port 4000 by default): `docker-compose up -d` (db migrations must be ran before this)
+
 ## Databaes migration
 
 Done using [dbmate](https://github.com/amacneil/dbmate). Db stuff is stored in `./db`.
