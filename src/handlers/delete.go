@@ -30,7 +30,7 @@ func (h Handlers) AccountDel(c *fiber.Ctx) error {
 		return c.Status(400).JSON([]ResJSONError{{Error: "Invalid uuid format"}})
 	}
 
-	authErr := h.RequireAdminRole(c)
+	authErr := h.RequireAdminRoleOrAccountID(c, accountID)
 	if authErr != nil {
 		return c.Status(403).JSON([]ResJSONError{{Error: authErr.Error()}})
 	}

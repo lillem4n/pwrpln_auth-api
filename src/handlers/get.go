@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 // AccountGet godoc
@@ -21,6 +22,11 @@ import (
 // @Router /account/{id} [get]
 func (h Handlers) AccountGet(c *fiber.Ctx) error {
 	accountID := c.Params("accountID")
+
+	_, uuidErr := uuid.Parse(accountID)
+	if uuidErr != nil {
+		return c.Status(400).JSON([]ResJSONError{{Error: "Invalid uuid format"}})
+	}
 
 	authErr := h.RequireAdminRoleOrAccountID(c, accountID)
 	if authErr != nil {
