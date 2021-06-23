@@ -32,3 +32,15 @@ services:
       - postgres
     ports:
       - 4000:4000
+
+  tests:
+    build:
+      context: tests
+    environment:
+      - ADMIN_API_KEY=hihi
+      - AUTH_URL=http://auth:4000
+      - JWT_SHARED_SECRET=hihi
+    profiles: ["tests"]
+    depends_on:
+      - auth
+    #command: ls -l
