@@ -16,7 +16,7 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/auth?sslmode=disable
     volumes:
       - "./db:/db:ro"
-    command: up
+    command: --wait up
     profiles: ["migrations"]
     depends_on:
       - postgres

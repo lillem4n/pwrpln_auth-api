@@ -1,0 +1,20 @@
+{
+  "name": "tests",
+  "version": "0.1.0",
+  "description": "Integration tests for the auth app",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape-es \"test-cases/*.js\" | tap-spec"
+  },
+  "author": "Lilleman",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "10.0.0",
+    "got": "11.8.2",
+    "jsonwebtoken": "8.5.1",
+    "tap-spec": "5.0.0",
+    "tape": "5.2.2",
+    "tape-es": "1.2.15"
+  }
+}

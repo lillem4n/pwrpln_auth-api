@@ -29,9 +29,11 @@ type AuthInput struct {
 // @Accept  json
 // @Produce  json
 // @Param body body AccountInput true "Account object to be written to database"
-// @Success 200 {object} db.CreatedAccount
+// @Success 201 {object} db.CreatedAccount
+// @Failure 400 {object} []ResJSONError
 // @Failure 401 {object} []ResJSONError
 // @Failure 403 {object} []ResJSONError
+// @Failure 409 {object} []ResJSONError
 // @Failure 415 {object} []ResJSONError
 // @Failure 500 {object} []ResJSONError
 // @Router /account [post]
@@ -79,7 +81,7 @@ func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-			return c.Status(409).JSON([]ResJSONError{{Error: "accountName is already taken"}})
+			return c.Status(409).JSON([]ResJSONError{{Error: "Name is already taken", Field: "name"}})
 		}
 		return c.Status(500).JSON([]ResJSONError{{Error: err.Error()}})
 	}
