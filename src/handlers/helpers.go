@@ -7,7 +7,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
-	"gitlab.larvit.se/power-plan/auth/src/db"
+	"gitlab.larvit.se/power-plan/auth-api/src/db"
 )
 
 func (h Handlers) returnTokens(account db.Account, c *fiber.Ctx) error {

@@ -5,8 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"gitlab.larvit.se/power-plan/auth/src/db"
-	"gitlab.larvit.se/power-plan/auth/src/utils"
+	"gitlab.larvit.se/power-plan/auth-api/src/db"
+	"gitlab.larvit.se/power-plan/auth-api/src/utils"
 )
 
 type AccountInput struct {
@@ -63,12 +63,14 @@ func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 
 	newAccountID, uuidErr := uuid.NewRandom()
 	if uuidErr != nil {
-		h.Log.Fatal("Could not create new Uuid", "err", uuidErr.Error())
+		h.Log.Error("Could not create new Uuid", "err", uuidErr.Error())
+		return c.Status(500).JSON([]ResJSONError{{Error: "Could not create new account UUID"}})
 	}
 
 	hashedPwd, pwdErr := utils.HashPassword(accountInput.Password)
 	if pwdErr != nil {
-		h.Log.Fatal("Could not hash password", "err", pwdErr.Error())
+		h.Log.Error("Could not hash password", "err", pwdErr.Error())
+		return c.Status(500).JSON([]ResJSONError{{Error: "Could not hash password: \"" + pwdErr.Error() + "\""}})
 	}
 
 	createdAccount, err := h.Db.AccountCreate(db.AccountCreateInput{

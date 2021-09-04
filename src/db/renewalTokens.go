@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	"gitlab.larvit.se/power-plan/auth/src/utils"
+	"gitlab.larvit.se/power-plan/auth-api/src/utils"
 )
 
 // RenewalTokenCreate obtain a new renewal token

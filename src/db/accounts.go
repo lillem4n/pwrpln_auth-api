@@ -29,7 +29,8 @@ func (d Db) AccountCreate(input AccountCreateInput) (CreatedAccount, error) {
 	for _, field := range input.Fields {
 		newFieldID, uuidErr := uuid.NewRandom()
 		if uuidErr != nil {
-			d.Log.Fatal("Could not create new Uuid", "err", uuidErr.Error())
+			d.Log.Error("Could not create new Uuid", "err", uuidErr.Error())
+			return CreatedAccount{}, uuidErr
 		}
 
 		_, err := d.DbPool.Exec(context.Background(), accountFieldsSQL, newFieldID, input.ID, field.Name, field.Values)
@@ -158,7 +159,8 @@ func (d Db) AccountUpdateFields(accountID string, fields []AccountCreateInputFie
 	for _, field := range fields {
 		newFieldID, err := uuid.NewRandom()
 		if err != nil {
-			d.Log.Fatal("Could not create new Uuid", "err", err.Error())
+			d.Log.Error("Could not create new Uuid", "err", err.Error())
+			return Account{}, err
 		}
 
 		_, err = tx.Exec(context.Background(), accountFieldsSQL, newFieldID, accountID, field.Name, field.Values)

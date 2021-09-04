@@ -53,7 +53,7 @@ func RandString(n int) string {
 }
 
 func SyslogTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	loc, _ := time.LoadLocation("") // "" == UTC
+	loc, _ := time.LoadLocation("UTC")
 	t = t.In(loc)
 
 	enc.AppendString(t.Format("2006-01-02 15:04:05"))
@@ -74,7 +74,7 @@ func GetLog() *zap.SugaredLogger {
 	if err != nil {
 		log.Panicf("Could not build logger, err: %v", err)
 	}
-	defer logger.Sync() // flushes buffer, if any
+	defer logger.Sync() // Flushes buffer, if any
 	log := logger.Sugar()
 
 	return log

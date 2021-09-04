@@ -6,7 +6,7 @@ This is a tiny http API for auth. Register accounts, auth with api-key or name/p
 
 Migrate database: `docker-compose run --rm db-migrations`
 
-Run tests: `docker-compose run --rm tests`
+(Optional) Run tests: `docker-compose run --rm tests`
 
 Start the service (on port 4000 by default): `docker-compose up -d` (db migrations must be ran before this)
 
@@ -40,4 +40,4 @@ Obtain an admin GWT: `curl -d '"api-key-goes-here"' -H "Content-Type: applicatio
 
 Use a bearer token to make a call: `curl -H "Content-Type: application/json" -H "Authorization: bearer your-JWT-token-goes-here" -i http://localhost:4000/account/{accountID}`
 
-Create account: `curl -d '{"name": "Bosse", "password":"Hemligt", "fields": [{ "name":"role", "values":["user"]}]}' -H "Content-Type: application/json" -H "Authorization: bearer your-JWT-token-goes-here" -i http://localhost:4000/account`
+Create account: `curl -d '{"name": "Bosse", "password": "Hemligt", "fields": [{ "name":"role", "values":["user"]}]}' -H "Content-Type: application/json" -H "Authorization: bearer your-JWT-token-goes-here" -i http://localhost:4000/account`

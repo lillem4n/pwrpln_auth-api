@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   postgres:
-    image: postgres:13.3-alpine
+    image: postgres:13.4-alpine3.14
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -11,7 +11,7 @@ services:
       - 5432:5432
 
   db-migrations:
-    image: amacneil/dbmate:v1.12.0
+    image: amacneil/dbmate:v1.12.1
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/auth?sslmode=disable
     volumes:
@@ -21,7 +21,7 @@ services:
     depends_on:
       - postgres
 
-  auth:
+  auth-api:
     build: .
     environment:
       - ADMIN_API_KEY=hihi
@@ -42,4 +42,4 @@ services:
       - JWT_SHARED_SECRET=hihi
     profiles: ["tests"]
     depends_on:
-      - auth
+      - auth-api

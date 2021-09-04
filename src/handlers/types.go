@@ -2,7 +2,7 @@ package handlers
 
 import (
 	jwt "github.com/dgrijalva/jwt-go"
-	"gitlab.larvit.se/power-plan/auth/src/db"
+	"gitlab.larvit.se/power-plan/auth-api/src/db"
 	"go.uber.org/zap"
 )
 

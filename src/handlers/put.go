@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"gitlab.larvit.se/power-plan/auth/src/db"
+	"gitlab.larvit.se/power-plan/auth-api/src/db"
 )
 
 // AccountUpdateFields godoc
