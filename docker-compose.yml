@@ -11,7 +11,10 @@ services:
       - 5432:5432
 
   db-migrations:
-    image: amacneil/dbmate:v1.12.1
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    #image: amacneil/dbmate:v1.12.1
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/auth?sslmode=disable
     volumes:

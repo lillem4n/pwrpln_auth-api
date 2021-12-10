@@ -1,0 +1,5 @@
+FROM amacneil/dbmate:v1.12.1
+
+COPY ./db ./db
+
+CMD ["--wait", "up"]
