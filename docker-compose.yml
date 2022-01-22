@@ -11,15 +11,12 @@ services:
       - 5432:5432
 
   db-migrations:
-    build:
-      context: .
-      dockerfile: Dockerfile.db
-    #image: amacneil/dbmate:v1.12.1
+    image: amacneil/dbmate:v1.12.1
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/auth?sslmode=disable
     volumes:
       - "./db:/db:ro"
-    command: --wait up
+    command: ["--wait", "up"]
     profiles: ["migrations"]
     depends_on:
       - postgres
