@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"gitea.larvit.se/pwrpln/auth-api/src/db"
 	jwt "github.com/dgrijalva/jwt-go"
-	"gitlab.larvit.se/power-plan/auth-api/src/db"
 	"go.uber.org/zap"
 )
 

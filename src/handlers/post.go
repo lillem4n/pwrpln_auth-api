@@ -3,10 +3,10 @@ package handlers
 import (
 	"strings"
 
+	"gitea.larvit.se/pwrpln/auth-api/src/db"
+	"gitea.larvit.se/pwrpln/auth-api/src/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"gitlab.larvit.se/power-plan/auth-api/src/db"
-	"gitlab.larvit.se/power-plan/auth-api/src/utils"
 )
 
 type AccountInput struct {

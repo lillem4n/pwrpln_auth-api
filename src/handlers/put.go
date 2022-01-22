@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"gitea.larvit.se/pwrpln/auth-api/src/db"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"gitlab.larvit.se/power-plan/auth-api/src/db"
 )
 
 // AccountUpdateFields godoc

@@ -1,4 +1,4 @@
-module gitlab.larvit.se/power-plan/auth-api
+module gitea.larvit.se/pwrpln/auth-api
 
 go 1.17
 
