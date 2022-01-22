@@ -1,6 +1,6 @@
 # Auth API
 
-This is a tiny http API for auth. Register accounts, auth with api-key or name/password, renew JWT tokens...
+A tiny REST API for auth. Register accounts, auth with api-key or name/password, renew JWT tokens...
 
 ## Quick start with docker compose
 
