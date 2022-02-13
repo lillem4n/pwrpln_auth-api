@@ -167,4 +167,6 @@ test('test-cases/01basic.js: Remove an account', async t => {
 	} catch (err) {
 		t.equal(err.message, 'Response code 404 (Not Found)', 'Response status for GETing the account again should be 404');
 	}
+
+	// Adding a comment just to modify the code, this can be removed.
 });
