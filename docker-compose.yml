@@ -41,7 +41,7 @@ services:
       context: tests
     environment:
       - ADMIN_API_KEY=hihi
-      - AUTH_URL=http://auth:4000
+      - AUTH_URL=http://auth-api:4000
       - JWT_SHARED_SECRET=hihi
     profiles: ["tests"]
     depends_on:
