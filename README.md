@@ -30,4 +30,4 @@ Use a bearer token to make a call: `curl -H "Content-Type: application/json" -H 
 
 Create account: `curl -d '{"name": "Bosse", "password": "Hemligt", "fields": [{ "name":"role", "values":["user"]}]}' -H "Content-Type: application/json" -H "Authorization: bearer your-JWT-token-goes-here" -i http://localhost:4000/account`
 
-x
+y
