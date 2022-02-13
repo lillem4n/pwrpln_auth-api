@@ -9,3 +9,22 @@ steps:
       - docker-compose run --rm db-migrations
       - docker-compose up -d
       - docker-compose run --rm tests
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+
+
+steps:
+- name: build
+  image: node
+  volumes:
+  - name: cache
+    path: /tmp/cache
+  commands:
+  - npm install
+  - npm test
+
+volumes:
+  - name: docker-sock
+    host:
+      path: /var/run/docker.sock
