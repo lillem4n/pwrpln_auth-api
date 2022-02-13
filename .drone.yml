@@ -6,11 +6,9 @@ steps:
   - name: Tests
     image: docker/compose:1.29.2
     commands:
-      # - docker-compose run --rm db-migrations
-      # - docker-compose up -d
-      # - docker-compose run --rm tests
-      - pwd
-      - ls -l
+      - docker-compose run --rm db-migrations
+      - docker-compose up -d
+      - docker-compose run --rm tests
     volumes:
       - name: docker-sock
         path: /var/run/docker.sock
