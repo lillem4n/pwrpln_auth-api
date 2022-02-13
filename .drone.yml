@@ -3,8 +3,9 @@ type: docker
 name: default
 
 steps:
-  - name: greeting
+  - name: Tests
     image: alpine:3.15.0
     commands:
-      - echo hello
-      - echo world
+      - docker-compose run --rm db-migrations
+      - docker-compose up -d
+      - docker-compose run --rm tests
