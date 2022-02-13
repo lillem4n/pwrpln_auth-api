@@ -6,6 +6,8 @@ steps:
   - name: Tests
     image: docker/compose:1.29.2
     commands:
+      - docker-compose build
+      - docker-compose --profile tests build
       - docker-compose run --rm db-migrations
       - docker-compose up -d
       - docker-compose run --rm tests
