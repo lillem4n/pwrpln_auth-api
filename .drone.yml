@@ -46,15 +46,19 @@ steps:
     volumes:
       - name: docker-sock
         path: /var/run/docker.sock
-    environment:
-      DOCKERHUB_TOKEN:
-        from_secret: dockerhub
     commands:
       - docker build -t lilleman/auth-api-db-migrate:$DRONE_TAG -f ./Dockerfile.migrations .
       - docker build -t lilleman/auth-api:$DRONE_TAG -f ./Dockerfile .
   - name: Push to Docker Hub
     image: docker/compose:1.29.2
+    environment:
+      DOCKERHUB_TOKEN:
+        from_secret: dockerhub
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
     commands:
+      - docker login -u lilleman -p $DOCKERHUB_TOKEN
       - docker push lilleman/auth-api-db-migrate:$DRONE_TAG
       - docker push lilleman/auth-api:$DRONE_TAG
 
