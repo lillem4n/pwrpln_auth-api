@@ -61,6 +61,8 @@ steps:
       - docker login -u lilleman -p $DOCKERHUB_TOKEN
       - docker push lilleman/auth-api-db-migrate:$DRONE_TAG
       - docker push lilleman/auth-api:$DRONE_TAG
+      - docker push lilleman/auth-api-db-migrate:latest
+      - docker push lilleman/auth-api:latest
 
 volumes:
   - name: docker-sock
