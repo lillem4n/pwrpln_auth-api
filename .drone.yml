@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: default
+name: Tests
 
 steps:
   - name: Tests
@@ -27,7 +27,7 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: default
+name: Deploy
 
 steps:
   - name: Tests
