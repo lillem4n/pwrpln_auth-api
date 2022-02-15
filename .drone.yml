@@ -5,15 +5,15 @@ name: Tests
 steps:
   - name: Tests
     image: docker/compose:1.29.2
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
     commands:
       - docker-compose build
       - docker-compose --profile tests build
       - docker-compose run --rm db-migrations
       - docker-compose up -d
       - docker-compose run --rm tests
-    volumes:
-      - name: docker-sock
-        path: /var/run/docker.sock
 
 volumes:
   - name: docker-sock
@@ -32,26 +32,31 @@ name: Deploy
 steps:
   - name: Tests
     image: docker/compose:1.29.2
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
     commands:
       - docker-compose build
       - docker-compose --profile tests build
       - docker-compose run --rm db-migrations
       - docker-compose up -d
       - docker-compose run --rm tests
+  - name: Build db migration
+    image: docker/compose:1.29.2
     volumes:
       - name: docker-sock
         path: /var/run/docker.sock
-  - name: Build db migration
-    image: docker/compose:1.29.2
     environment:
       DOCKERHUB_TOKEN:
         from_secret: dockerhub
     commands:
-      - docker build -t auth-api-db-migrate:$DRONE_TAG -f ./Dockerfile.migrations .
-      - docker build -t auth-api:$DRONE_TAG -f ./Dockerfile .
-    volumes:
-      - name: docker-sock
-        path: /var/run/docker.sock
+      - docker build -t lilleman/auth-api-db-migrate:$DRONE_TAG -f ./Dockerfile.migrations .
+      - docker build -t lilleman/auth-api:$DRONE_TAG -f ./Dockerfile .
+  - name: Push to Docker Hub
+    image: docker/compose:1.29.2
+    commands:
+      - docker push lilleman/auth-api-db-migrate:$DRONE_TAG
+      - docker push lilleman/auth-api:$DRONE_TAG
 
 volumes:
   - name: docker-sock
