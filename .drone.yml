@@ -47,8 +47,8 @@ steps:
       DOCKERHUB_TOKEN:
         from_secret: dockerhub
     commands:
-      - docker build -t auth-api-db-migrate:$DRONE_TAG -f ./Dockerfile.migrations
-      - docker build -t auth-api:$DRONE_TAG -f ./Dockerfile
+      - docker build -t auth-api-db-migrate:$DRONE_TAG -f ./Dockerfile.migrations .
+      - docker build -t auth-api:$DRONE_TAG -f ./Dockerfile .
 
 volumes:
   - name: docker-sock
