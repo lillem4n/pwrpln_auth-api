@@ -1,3 +1,5 @@
+# Run on all branch pushes
+---
 kind: pipeline
 type: docker
 name: default
@@ -19,3 +21,44 @@ volumes:
   - name: docker-sock
     host:
       path: /var/run/docker.sock
+
+trigger:
+  event:
+    exclude:
+      - tag
+
+# Run on all tag pushes
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: Tests
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose build
+      - docker-compose --profile tests build
+      - docker-compose run --rm db-migrations
+      - docker-compose up -d
+      - docker-compose run --rm tests
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+  - name: Build db migration
+    image: docker/compose:1.29.2
+    environment:
+      DOCKERHUB_TOKEN:
+        from_secret: dockerhub
+    commands:
+      #- docker build -t auth-api-db-migrate:
+      - env
+
+volumes:
+  - name: docker-sock
+    host:
+      path: /var/run/docker.sock
+
+trigger:
+  event:
+    - tag
