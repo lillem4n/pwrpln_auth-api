@@ -49,6 +49,9 @@ steps:
     commands:
       - docker build -t auth-api-db-migrate:$DRONE_TAG -f ./Dockerfile.migrations .
       - docker build -t auth-api:$DRONE_TAG -f ./Dockerfile .
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
 
 volumes:
   - name: docker-sock
