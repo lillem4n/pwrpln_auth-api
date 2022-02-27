@@ -56,7 +56,7 @@ func (h Handlers) parseJWT(JWT string) (Claims, error) {
 		return Claims{}, err
 	}
 	if !token.Valid {
-		err := errors.New("Invalid token")
+		err := errors.New("invalid token")
 		return Claims{}, err
 	}
 
@@ -89,7 +89,7 @@ func (h Handlers) RequireAdminRole(c *fiber.Ctx) error {
 	headers := h.parseHeaders(c)
 
 	if headers["Authorization"] == "" {
-		return errors.New("Authorization header is missing")
+		return errors.New("authorization header is missing")
 	}
 
 	claims, claimsErr := h.parseJWT(headers["Authorization"])
@@ -98,11 +98,11 @@ func (h Handlers) RequireAdminRole(c *fiber.Ctx) error {
 	}
 
 	if claims.AccountFields == nil {
-		return errors.New("Account have no fields at all")
+		return errors.New("account have no fields at all")
 	}
 
 	if claims.AccountFields["role"] == nil {
-		return errors.New("Account have no field named \"role\"")
+		return errors.New("account have no field named \"role\"")
 	}
 
 	for _, role := range claims.AccountFields["role"] {
@@ -111,7 +111,7 @@ func (h Handlers) RequireAdminRole(c *fiber.Ctx) error {
 		}
 	}
 
-	return errors.New("No \"admin\" role found on account")
+	return errors.New("no \"admin\" role found on account")
 }
 
 // RequireAdminRoleOrAccountID returns nil if no error is found
@@ -119,7 +119,7 @@ func (h Handlers) RequireAdminRoleOrAccountID(c *fiber.Ctx, accountID string) er
 	headers := h.parseHeaders(c)
 
 	if headers["Authorization"] == "" {
-		return errors.New("Authorization header is missing")
+		return errors.New("authorization header is missing")
 	}
 
 	claims, claimsErr := h.parseJWT(headers["Authorization"])

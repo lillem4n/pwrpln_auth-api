@@ -141,14 +141,14 @@ func (h Handlers) AccountAuthPassword(c *fiber.Ctx) error {
 
 	resolvedAccount, err := h.Db.AccountGet("", "", authInput.Name)
 	if err != nil {
-		if err.Error() == "No account found" {
+		if err.Error() == "no rows in result set" {
 			return c.Status(403).JSON([]ResJSONError{{Error: "Invalid name or password"}})
 		}
 
 		return c.Status(500).JSON([]ResJSONError{{Error: err.Error()}})
 	}
 
-	if utils.CheckPasswordHash(authInput.Password, resolvedAccount.Password) == false {
+	if !utils.CheckPasswordHash(authInput.Password, resolvedAccount.Password) {
 		return c.Status(403).JSON([]ResJSONError{{Error: "Invalid name or password"}})
 	}
 

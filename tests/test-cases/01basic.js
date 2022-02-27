@@ -110,6 +110,36 @@ test('test-cases/01basic.js: Auth by username and password', async t => {
 	t.equal(userJWT.accountName, userName, 'The verified account name should match the created user');
 });
 
+test('test-cases/01basic.js: Auth by username and wrong password', async t => {
+	try {
+		await got.post(`${process.env.AUTH_URL}/auth/password`, {
+			json: {
+				name: userName,
+				password: 'isWrong',
+			},
+			responseType: 'json',
+		});
+		t.fail('Trying to login with wrong password should fail with a 403');
+	} catch(err) {
+		t.equal(err.message, 'Response code 403 (Forbidden)', 'Trying to login with wrong password should fail with a 403');
+	}
+});
+
+test('test-cases/01basic.js: Auth by wrong username', async t => {
+	try {
+		await got.post(`${process.env.AUTH_URL}/auth/password`, {
+			json: {
+				name: 'lapptomte',
+				password: 'isWrong',
+			},
+			responseType: 'json',
+		});
+		t.fail('Trying to login with wrong username should fail with a 403');
+	} catch(err) {
+		t.equal(err.message, 'Response code 403 (Forbidden)', 'Trying to login with wrong username should fail with a 403');
+	}
+});
+
 test('test-cases/01basic.js: PUT /account/{id}/fields', async t => {
 	const res = await got.put(`${process.env.AUTH_URL}/account/${user.id}/fields`, {
 		headers: { 'Authorization': `bearer ${adminJWTString}`},

@@ -5,7 +5,7 @@ services:
     image: postgres:14.2-alpine3.15
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=puIleHgcpsvDr360ttUo
       - POSTGRES_DB=auth
 
   db-migrations:
@@ -13,7 +13,7 @@ services:
       context: .
       dockerfile: Dockerfile.migrations
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/auth?sslmode=disable
+      - DATABASE_URL=postgres://postgres:puIleHgcpsvDr360ttUo@postgres:5432/auth?sslmode=disable
     command: ["--wait", "up"]
     profiles: ["migrations"]
     depends_on:
@@ -23,7 +23,7 @@ services:
     build: .
     environment:
       - ADMIN_API_KEY=hihi
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/auth?sslmode=disable
+      - DATABASE_URL=postgres://postgres:puIleHgcpsvDr360ttUo@postgres:5432/auth?sslmode=disable
       - JWT_SHARED_SECRET=hihi
       - WEB_BIND_HOST=:4000
     depends_on:
