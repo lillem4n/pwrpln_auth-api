@@ -22,6 +22,10 @@ The account field "role" is a bit special, in that if it contains "admin" as one
 
 Run integration tests (Requires migrated database and started API): `docker-compose run --rm tests`
 
+## Deploy a new version
+
+Everytime a push is done, tests are ran on [Drone](https://drone.larvit.se/pwrpln/auth-api). To deploy a new version to [Dockerhub](https://hub.docker.com/repository/docker/lilleman/auth-api), create a new tag (USE SEMVER!!!).
+
 ## Some useful cURLs
 
 Obtain an admin GWT: `curl -d '"api-key-goes-here"' -H "Content-Type: application/json" -i http://localhost:4000/auth/api-key`

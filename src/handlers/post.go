@@ -143,6 +143,8 @@ func (h Handlers) AccountAuthPassword(c *fiber.Ctx) error {
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return c.Status(403).JSON([]ResJSONError{{Error: "Invalid name or password"}})
+		} else {
+			h.Log.Error("unknown error when resolving account", "err", err.Error())
 		}
 
 		return c.Status(500).JSON([]ResJSONError{{Error: err.Error()}})
