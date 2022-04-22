@@ -43,7 +43,7 @@ steps:
       - docker-compose run --rm db-migrations
       - docker-compose up -d
       - docker-compose run --rm tests
-  - name: Build db migration
+  - name: Build images
     image: docker/compose:1.29.2
     volumes:
       - name: docker-sock
