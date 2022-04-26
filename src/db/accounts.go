@@ -81,8 +81,8 @@ func (d Db) AccountDel(accountID string) error {
 }
 
 // AccountGet fetches an account from the database
-func (d Db) AccountGet(accountID string, APIKey string, Name string) (Account, error) {
-	d.Log.Debug("Trying to get account", "accountID", accountID, "len(APIKey)", len(APIKey))
+func (d Db) AccountGet(accountID string, APIKey string, name string) (Account, error) {
+	d.Log.Debug("Trying to get account", "accountID", accountID, "len(APIKey)", len(APIKey), "name", name)
 
 	var account Account
 	var searchParam string
@@ -93,9 +93,13 @@ func (d Db) AccountGet(accountID string, APIKey string, Name string) (Account, e
 	} else if APIKey != "" {
 		accountSQL = accountSQL + "\"apiKey\" = $1"
 		searchParam = APIKey
-	} else if Name != "" {
+	} else if name != "" {
 		accountSQL = accountSQL + "name = $1"
-		searchParam = Name
+		searchParam = name
+	} else {
+		d.Log.Debug("No get criteria entered, returning empty response without calling the database")
+
+		return Account{}, errors.New("no rows in result set")
 	}
 
 	accountErr := d.DbPool.QueryRow(context.Background(), accountSQL, searchParam).Scan(&account.ID, &account.Created, &account.Name, &account.Password)
