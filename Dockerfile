@@ -1,4 +1,4 @@
-FROM golang:1.18.1-alpine3.15 AS builder
+FROM golang:1.19.6-alpine3.17 AS builder
 
 # Install missing pkgs
 RUN apk add --no-cache git

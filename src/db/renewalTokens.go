@@ -8,14 +8,18 @@ import (
 
 // RenewalTokenCreate obtain a new renewal token
 func (d Db) RenewalTokenCreate(accountID string) (string, error) {
-	d.Log.Debug("Creating new renewal token", "accountID", accountID)
+	d.Log.Context = []interface{}{
+		"accountID", accountID,
+	}
+
+	d.Log.Debug("Creating new renewal token")
 
 	newToken := utils.RandString(60)
 
 	insertSQL := "INSERT INTO \"renewalTokens\" (\"accountId\",token) VALUES($1,$2);"
 	_, insertErr := d.DbPool.Exec(context.Background(), insertSQL, accountID, newToken)
 	if insertErr != nil {
-		d.Log.Error("Could not insert into database table \"renewalTokens\"", "err", insertErr.Error(), "accountID", accountID)
+		d.Log.Error("Could not insert into database table \"renewalTokens\"", "err", insertErr.Error())
 		return "", insertErr
 	}
 

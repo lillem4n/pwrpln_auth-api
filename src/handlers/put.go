@@ -25,13 +25,19 @@ import (
 func (h Handlers) AccountUpdateFields(c *fiber.Ctx) error {
 	accountID := c.Params("accountID")
 
+	h.Log.Context = []interface{}{
+		"accountID", accountID,
+	}
+
 	_, uuidErr := uuid.Parse(accountID)
 	if uuidErr != nil {
+		h.Log.Debug("client supplied invalid uuid format")
 		return c.Status(400).JSON([]ResJSONError{{Error: "Invalid uuid format"}})
 	}
 
 	authErr := h.RequireAdminRole(c)
 	if authErr != nil {
+		h.Log.Debug("client does not have admin role")
 		return c.Status(403).JSON([]ResJSONError{{Error: authErr.Error()}})
 	}
 

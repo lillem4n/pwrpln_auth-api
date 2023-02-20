@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"gitea.larvit.se/pwrpln/auth-api/src/db"
+	"gitea.larvit.se/pwrpln/go_log"
 	jwt "github.com/dgrijalva/jwt-go"
-	"go.uber.org/zap"
 )
 
 // Claims is the JWT struct
@@ -18,7 +18,7 @@ type Claims struct {
 type Handlers struct {
 	Db     db.Db
 	JwtKey []byte
-	Log    *zap.SugaredLogger
+	Log    go_log.Log
 }
 
 // ResJSONError is an error field that is used in JSON error responses

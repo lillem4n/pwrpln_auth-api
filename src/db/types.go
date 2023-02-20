@@ -3,9 +3,9 @@ package db
 import (
 	"time"
 
+	"gitea.larvit.se/pwrpln/go_log"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"go.uber.org/zap"
 )
 
 // Account is an account as represented in the database
@@ -42,5 +42,5 @@ type AccountCreateInput struct {
 // Db struct
 type Db struct {
 	DbPool *pgxpool.Pool
-	Log    *zap.SugaredLogger
+	Log    go_log.Log
 }
