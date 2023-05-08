@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"gitea.larvit.se/pwrpln/auth-api/src/db"
+	"gitea.larvit.se/pwrpln/auth-api/pkgs/db"
 	"gitea.larvit.se/pwrpln/go_log"
 	jwt "github.com/dgrijalva/jwt-go"
 )

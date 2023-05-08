@@ -77,7 +77,48 @@ info:
   title: JWT Auth API
   version: "0.1"
 paths:
-  /account:
+  /accounts:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Requires Authorization-header with role "admin".
+        Example: Authorization: bearer xxx
+        Where "xxx" is a valid JWT token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/db.Account'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+        "415":
+          description: Unsupported Media Type
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            items:
+              $ref: '#/definitions/handlers.ResJSONError'
+            type: array
+      summary: Get accounts
     post:
       consumes:
       - application/json
@@ -137,7 +178,7 @@ paths:
               $ref: '#/definitions/handlers.ResJSONError'
             type: array
       summary: Create an account
-  /account/:id:
+  /accounts/:id:
     delete:
       consumes:
       - application/json
@@ -196,7 +237,7 @@ paths:
               $ref: '#/definitions/handlers.ResJSONError'
             type: array
       summary: Delete an account
-  /account/{id}:
+  /accounts/{id}:
     get:
       consumes:
       - application/json
@@ -243,7 +284,7 @@ paths:
               $ref: '#/definitions/handlers.ResJSONError'
             type: array
       summary: Get account by id
-  /account/{id}/fields:
+  /accounts/{id}/fields:
     put:
       consumes:
       - application/json

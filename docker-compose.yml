@@ -3,12 +3,19 @@ version: '3.9'
 services:
   postgres:
     image: postgres:15.2-alpine3.17
+    user: postgres
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=prutt
       - POSTGRES_DB=auth
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 80s
 
   db-migrations:
     build:
@@ -17,19 +24,21 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:prutt@postgres:5432/auth?sslmode=disable
     command: ["--wait", "up"]
-    profiles: ["migrations"]
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
 
-  auth-api:
+  api:
     build: .
     environment:
       - ADMIN_API_KEY=hihi
       - DATABASE_URL=postgres://postgres:prutt@postgres:5432/auth?sslmode=disable
       - JWT_SHARED_SECRET=hihi
       - WEB_BIND_HOST=:4000
+      - LOG_MIN_LVL=Debug
     depends_on:
-      - postgres
+      db-migrations:
+        condition: service_completed_successfully
     ports:
       - 4000:4000
 
@@ -38,8 +47,9 @@ services:
       context: tests
     environment:
       - ADMIN_API_KEY=hihi
-      - AUTH_URL=http://auth-api:4000
+      - AUTH_URL=http://api:4000
       - JWT_SHARED_SECRET=hihi
     profiles: ["tests"]
     depends_on:
-      - auth-api
+      api:
+        condition: service_started

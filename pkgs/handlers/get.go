@@ -19,7 +19,7 @@ import (
 // @Failure 403 {object} []ResJSONError
 // @Failure 415 {object} []ResJSONError
 // @Failure 500 {object} []ResJSONError
-// @Router /account/{id} [get]
+// @Router /accounts/{id} [get]
 func (h Handlers) AccountGet(c *fiber.Ctx) error {
 	accountID := c.Params("accountID")
 

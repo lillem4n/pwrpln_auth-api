@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"gitea.larvit.se/pwrpln/auth-api/src/db"
+	"gitea.larvit.se/pwrpln/auth-api/pkgs/db"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -21,7 +21,7 @@ import (
 // @Failure 403 {object} []ResJSONError
 // @Failure 415 {object} []ResJSONError
 // @Failure 500 {object} []ResJSONError
-// @Router /account/{id}/fields [put]
+// @Router /accounts/{id}/fields [put]
 func (h Handlers) AccountUpdateFields(c *fiber.Ctx) error {
 	accountID := c.Params("accountID")
 

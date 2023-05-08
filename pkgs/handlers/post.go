@@ -3,8 +3,8 @@ package handlers
 import (
 	"strings"
 
-	"gitea.larvit.se/pwrpln/auth-api/src/db"
-	"gitea.larvit.se/pwrpln/auth-api/src/utils"
+	"gitea.larvit.se/pwrpln/auth-api/pkgs/db"
+	"gitea.larvit.se/pwrpln/auth-api/pkgs/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -36,7 +36,7 @@ type AuthInput struct {
 // @Failure 409 {object} []ResJSONError
 // @Failure 415 {object} []ResJSONError
 // @Failure 500 {object} []ResJSONError
-// @Router /account [post]
+// @Router /accounts [post]
 func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 	authErr := h.RequireAdminRole(c)
 	if authErr != nil {

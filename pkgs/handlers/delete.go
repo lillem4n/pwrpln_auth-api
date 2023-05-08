@@ -21,7 +21,7 @@ import (
 // @Failure 404 {object} []ResJSONError
 // @Failure 415 {object} []ResJSONError
 // @Failure 500 {object} []ResJSONError
-// @Router /account/:id [delete]
+// @Router /accounts/:id [delete]
 func (h Handlers) AccountDel(c *fiber.Ctx) error {
 	accountID := c.Params("accountID")
 

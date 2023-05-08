@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	"gitea.larvit.se/pwrpln/auth-api/src/utils"
+	"gitea.larvit.se/pwrpln/auth-api/pkgs/utils"
 )
 
 // RenewalTokenCreate obtain a new renewal token
