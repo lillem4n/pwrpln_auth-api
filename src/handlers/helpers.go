@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"gitea.larvit.se/pwrpln/auth-api/pkgs/db"
+	"gitea.larvit.se/pwrpln/auth-api/src/db"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )

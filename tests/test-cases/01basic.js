@@ -54,7 +54,7 @@ test('test-cases/01basic.js: GETting the admin account, with the token we just o
 });
 
 test('test-cases/01basic.js: Creating a new account', async t => {
-	const res = await got.post(`${process.env.AUTH_URL}/account`, {
+	const res = await got.post(`${process.env.AUTH_URL}/accounts`, {
 		headers: { 'Authorization': `bearer ${adminJWTString}`},
 		json: {
 			fields: [
@@ -79,7 +79,7 @@ test('test-cases/01basic.js: Creating a new account', async t => {
 	t.notEqual(user.apiKey, undefined, 'The new account should have an apiKey');
 
 	try {
-		await got.post(`${process.env.AUTH_URL}/account`, {
+		await got.post(`${process.env.AUTH_URL}/accounts`, {
 			headers: { 'Authorization': `bearer ${adminJWTString}`},
 			json: {
 				fields: [{name: 'role',values: ['user'],}],
@@ -187,7 +187,7 @@ test('test-cases/01basic.js: Remove an account', async t => {
 		await got.delete(`${process.env.AUTH_URL}/accounts/a423e690-74b9-4f37-9976-f5bf75a5ea32`, {
 			headers: { 'Authorization': `bearer ${adminJWTString}`},
 			responseType: 'json',
-			retry: 0,
+			retry: { limit: 0 },
 		});
 		t.fail('Response status for DELETing an account that does not exist should be 404');
 	} catch (err) {
@@ -197,7 +197,7 @@ test('test-cases/01basic.js: Remove an account', async t => {
 	const delRes = await got.delete(`${process.env.AUTH_URL}/accounts/${user.id}`, {
 		headers: { 'Authorization': `bearer ${adminJWTString}`},
 		responseType: 'json',
-		retry: 0,
+		retry: { limit: 0 },
 	});
 
 	t.equal(delRes.statusCode, 204, 'Response status for DELETE should be 204');
@@ -206,7 +206,7 @@ test('test-cases/01basic.js: Remove an account', async t => {
 		await got(`${process.env.AUTH_URL}/accounts/${user.id}`, {
 			headers: { 'Authorization': `bearer ${adminJWTString}`},
 			responseType: 'json',
-			retry: 0,
+			retry: { limit: 0 },
 		});
 		t.fail('Response status for GETing the account again should be 404');
 	} catch (err) {

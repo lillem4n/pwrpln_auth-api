@@ -33,3 +33,12 @@ Obtain an admin GWT: `curl -d '"api-key-goes-here"' -H "Content-Type: applicatio
 Use a bearer token to make a call: `curl -H "Content-Type: application/json" -H "Authorization: bearer your-JWT-token-goes-here" -i http://localhost:4000/accounts/{accountID}`
 
 Create account: `curl -d '{"name": "Bosse", "password": "Hemligt", "fields": [{ "name":"role", "values":["user"]}]}' -H "Content-Type: application/json" -H "Authorization: bearer your-JWT-token-goes-here" -i http://localhost:4000/account`
+
+## Development
+
+For local development, run with .env like: `eval $(cat .env) go run src/main.go`
+
+To regenerate the swagger docs folder:
+
+1. Make sure you have swag installed: https://github.com/swaggo/swag
+2. cd src && swag init

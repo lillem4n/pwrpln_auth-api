@@ -37,9 +37,10 @@ func (h Handlers) AccountDel(c *fiber.Ctx) error {
 
 	err := h.Db.AccountDel(accountID)
 	if err != nil {
-		if err.Error() == "No account found for given accountID" {
+		if err.Error() == "no account found for given accountID" {
 			return c.Status(404).JSON([]ResJSONError{{Error: err.Error()}})
 		} else {
+			h.Log.Error("Database error when trying to remove account", "err", err.Error())
 			return c.Status(500).JSON([]ResJSONError{{Error: "Database error when trying to remove account"}})
 		}
 	}

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"gitea.larvit.se/pwrpln/auth-api/pkgs/db"
+	"gitea.larvit.se/pwrpln/auth-api/src/db"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )

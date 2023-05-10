@@ -3,8 +3,8 @@ package handlers
 import (
 	"strings"
 
-	"gitea.larvit.se/pwrpln/auth-api/pkgs/db"
-	"gitea.larvit.se/pwrpln/auth-api/pkgs/utils"
+	"gitea.larvit.se/pwrpln/auth-api/src/db"
+	"gitea.larvit.se/pwrpln/auth-api/src/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
