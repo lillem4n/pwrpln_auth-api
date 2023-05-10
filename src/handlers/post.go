@@ -36,7 +36,7 @@ type AuthInput struct {
 // @Failure 409 {object} []ResJSONError
 // @Failure 415 {object} []ResJSONError
 // @Failure 500 {object} []ResJSONError
-// @Router /account [post]
+// @Router /accounts [post]
 func (h Handlers) AccountCreate(c *fiber.Ctx) error {
 	authErr := h.RequireAdminRole(c)
 	if authErr != nil {

@@ -21,7 +21,7 @@ import (
 // @Failure 403 {object} []ResJSONError
 // @Failure 415 {object} []ResJSONError
 // @Failure 500 {object} []ResJSONError
-// @Router /account/{id}/fields [put]
+// @Router /accounts/{id}/fields [put]
 func (h Handlers) AccountUpdateFields(c *fiber.Ctx) error {
 	accountID := c.Params("accountID")
 

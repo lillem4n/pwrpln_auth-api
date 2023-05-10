@@ -39,13 +39,13 @@ test('test-cases/01basic.js: Authing with configurated API KEY', async t => {
 
 test('test-cases/01basic.js: GETting the admin account, with the token we just obtained', async t => {
 	try {
-		await got(`${process.env.AUTH_URL}/account/${adminJWT.accountId}`);
-		t.fail('Calling /account/{id} without proper auth token should give 403');
+		await got(`${process.env.AUTH_URL}/accounts/${adminJWT.accountId}`);
+		t.fail('Calling /accounts/{id} without proper auth token should give 403');
 	} catch (err) {
-		t.equal(err.message, 'Response code 403 (Forbidden)', 'Calling /account/{id} without proper auth token should give 403');
+		t.equal(err.message, 'Response code 403 (Forbidden)', 'Calling /accounts/{id} without proper auth token should give 403');
 	}
 
-	const accountRes = await got(`${process.env.AUTH_URL}/account/${adminJWT.accountId}`, {
+	const accountRes = await got(`${process.env.AUTH_URL}/accounts/${adminJWT.accountId}`, {
 		headers: { 'Authorization': `bearer ${adminJWTString}`},
 		responseType: 'json',
 	});
@@ -54,7 +54,7 @@ test('test-cases/01basic.js: GETting the admin account, with the token we just o
 });
 
 test('test-cases/01basic.js: Creating a new account', async t => {
-	const res = await got.post(`${process.env.AUTH_URL}/account`, {
+	const res = await got.post(`${process.env.AUTH_URL}/accounts`, {
 		headers: { 'Authorization': `bearer ${adminJWTString}`},
 		json: {
 			fields: [
@@ -79,7 +79,7 @@ test('test-cases/01basic.js: Creating a new account', async t => {
 	t.notEqual(user.apiKey, undefined, 'The new account should have an apiKey');
 
 	try {
-		await got.post(`${process.env.AUTH_URL}/account`, {
+		await got.post(`${process.env.AUTH_URL}/accounts`, {
 			headers: { 'Authorization': `bearer ${adminJWTString}`},
 			json: {
 				fields: [{name: 'role',values: ['user'],}],
@@ -155,8 +155,8 @@ test('test-cases/01basic.js: Auth by empty username and empty password', async t
 	}
 });
 
-test('test-cases/01basic.js: PUT /account/{id}/fields', async t => {
-	const res = await got.put(`${process.env.AUTH_URL}/account/${user.id}/fields`, {
+test('test-cases/01basic.js: PUT /accounts/{id}/fields', async t => {
+	const res = await got.put(`${process.env.AUTH_URL}/accounts/${user.id}/fields`, {
 		headers: { 'Authorization': `bearer ${adminJWTString}`},
 		json: [
 			{
@@ -184,29 +184,29 @@ test('test-cases/01basic.js: PUT /account/{id}/fields', async t => {
 test('test-cases/01basic.js: Remove an account', async t => {
 	try {
 		// Random uuid that should not exist in the db. The chance of this existing is... small
-		await got.delete(`${process.env.AUTH_URL}/account/a423e690-74b9-4f37-9976-f5bf75a5ea32`, {
+		await got.delete(`${process.env.AUTH_URL}/accounts/a423e690-74b9-4f37-9976-f5bf75a5ea32`, {
 			headers: { 'Authorization': `bearer ${adminJWTString}`},
 			responseType: 'json',
-			retry: 0,
+			retry: { limit: 0 },
 		});
 		t.fail('Response status for DELETing an account that does not exist should be 404');
 	} catch (err) {
 		t.equal(err.message, 'Response code 404 (Not Found)', 'Response status for DELETing an account that does not exist should be 404');
 	}
 
-	const delRes = await got.delete(`${process.env.AUTH_URL}/account/${user.id}`, {
+	const delRes = await got.delete(`${process.env.AUTH_URL}/accounts/${user.id}`, {
 		headers: { 'Authorization': `bearer ${adminJWTString}`},
 		responseType: 'json',
-		retry: 0,
+		retry: { limit: 0 },
 	});
 
 	t.equal(delRes.statusCode, 204, 'Response status for DELETE should be 204');
 
 	try {
-		await got(`${process.env.AUTH_URL}/account/${user.id}`, {
+		await got(`${process.env.AUTH_URL}/accounts/${user.id}`, {
 			headers: { 'Authorization': `bearer ${adminJWTString}`},
 			responseType: 'json',
-			retry: 0,
+			retry: { limit: 0 },
 		});
 		t.fail('Response status for GETing the account again should be 404');
 	} catch (err) {
