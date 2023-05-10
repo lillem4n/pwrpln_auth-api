@@ -12,7 +12,6 @@ steps:
       - docker-compose down -v --remove-orphans -t0
       - docker-compose build
       - docker-compose --profile tests build
-      - docker-compose run --rm db-migrations
       - docker-compose up -d
       - docker-compose run --rm tests
 
