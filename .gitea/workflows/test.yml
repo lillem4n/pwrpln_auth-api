@@ -6,10 +6,8 @@ jobs:
   Explore-Gitea-Actions:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # - name: Check out repository code
+      #   uses: actions/checkout@v4
       - name: Debug
         run: echo "wat?"
       - name: Docker test
