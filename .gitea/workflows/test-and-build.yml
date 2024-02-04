@@ -1,0 +1,22 @@
+name: Test and build
+run-name: ${{ gitea.actor }} testing and building
+on:
+  push:
+    branches:
+      - '**'
+
+env:
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+  RUNNER_API_KEY: ${{ secrets.RUNNER_API_KEY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .gitea/test-and-build.sh
+          sparse-checkout-cone-mode: false
+      - run: .gitea/test-and-build.sh
