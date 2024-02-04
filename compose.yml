@@ -5,7 +5,6 @@ services:
     image: postgres:15.2-alpine3.17
     user: postgres
     environment:
-      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=prutt
       - POSTGRES_DB=auth
     # ports:
@@ -26,7 +25,7 @@ services:
     command: ["--wait", "up"]
     depends_on:
       postgres:
-        condition: service_started
+        condition: service_healthy
 
   api:
     build: .

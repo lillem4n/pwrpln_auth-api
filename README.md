@@ -4,8 +4,6 @@ A tiny REST API for auth. Register accounts, auth with api-key or name/password,
 
 ## Quick start with docker compose
 
-Migrate database: `docker-compose run --rm db-migrations`
-
 Start the API (on port 4000 by default): `docker-compose up -d`
 
 Point your browser to `http://localhost:4000` to view the swagger API documentation.
@@ -20,7 +18,7 @@ The account field "role" is a bit special, in that if it contains "admin" as one
 
 ## Tests
 
-Run integration tests (Requires migrated database and started API): `docker-compose run --rm tests`
+Run integration tests: `docker-compose run --rm tests`
 
 ## Deploy a new version
 
