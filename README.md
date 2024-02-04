@@ -22,7 +22,7 @@ Run integration tests: `docker-compose run --rm tests`
 
 ## Deploy a new version
 
-Everytime a push is done, tests are ran on [Drone](https://drone.larvit.se/pwrpln/auth-api). To deploy a new version to [Dockerhub](https://hub.docker.com/repository/docker/lilleman/auth-api), create a new tag (USE SEMVER!!!).
+Everytime a push is done, tests are ran and if they are successful a new image will be published on https://gitea.larvit.se/pwrpln/auth-api:branch-name and https://gitea.larvit.se/pwrpln/auth-api-db-migrations:branch-name
 
 ## Some useful cURLs
 
