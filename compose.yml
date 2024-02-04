@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   postgres:
-    image: postgres:15.2-alpine3.17
+    image: postgres:16.1-alpine3.19
     user: postgres
     environment:
       - POSTGRES_PASSWORD=prutt
