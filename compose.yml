@@ -33,8 +33,10 @@ services:
       - ADMIN_API_KEY=hihi
       - DATABASE_URL=postgres://postgres:prutt@postgres:5432/auth?sslmode=disable
       - JWT_SHARED_SECRET=hihi
-      - WEB_BIND_HOST=:4000
       - LOG_MIN_LVL=Debug
+      - URL_PREFIX=/
+      - WEB_BIND_HOST=:4000
+      - PUBLIC_HOST=localhost:4000
     depends_on:
       db-migrations:
         condition: service_completed_successfully

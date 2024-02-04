@@ -10,10 +10,8 @@
         },
         "license": {
             "name": "MIT"
-        },
-        "version": "0.1"
+        }
     },
-    "basePath": "/",
     "paths": {
         "/accounts": {
             "get": {
