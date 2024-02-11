@@ -10,7 +10,7 @@ ENV GO111MODULE=on \
     GOARCH=amd64
 
 # Set workdir in GOPATH
-WORKDIR $GOPATH/src/gitlab.larvit.se/power-plan/auth
+WORKDIR $GOPATH/src/gitea.larvit.se/power-plan/auth
 
 # Copy and download dependency using go mod
 COPY go.mod .
