@@ -25,6 +25,7 @@ type AuthInput struct {
 // @Description Requires Authorization-header with role "admin".
 // @Description Example: Authorization: bearer xxx
 // @Description Where "xxx" is a valid JWT token
+// @Param Authorization header string true "Insert your access token"
 // @ID account-create
 // @Accept  json
 // @Produce  json

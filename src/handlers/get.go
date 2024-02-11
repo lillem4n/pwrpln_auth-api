@@ -10,6 +10,7 @@ import (
 // @Description Requires Authorization-header with either role "admin" or with a matching account id.
 // @Description Example: Authorization: bearer xxx
 // @Description Where "xxx" is a valid JWT token
+// @Param Authorization header string true "Insert your access token"
 // @ID get-account-by-id
 // @Accept  json
 // @Produce  json
@@ -50,6 +51,7 @@ func (h Handlers) AccountGet(c *fiber.Ctx) error {
 // @Description Requires Authorization-header with role "admin".
 // @Description Example: Authorization: bearer xxx
 // @Description Where "xxx" is a valid JWT token
+// @Param Authorization header string true "Insert your access token"
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} []db.Account
