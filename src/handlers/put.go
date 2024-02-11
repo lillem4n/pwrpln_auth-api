@@ -11,6 +11,7 @@ import (
 // @Description Requires Authorization-header with role "admin".
 // @Description Example: Authorization: bearer xxx
 // @Description Where "xxx" is a valid JWT token
+// @Param Authorization header string true "Insert your access token"
 // @ID account-update-fields
 // @Accept  json
 // @Produce  json
