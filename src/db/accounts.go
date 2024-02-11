@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -78,7 +79,7 @@ func (d Db) AccountDel(accountID string) error {
 		return err
 	}
 
-	if string(res) == "DELETE 0" {
+	if res.String() == "DELETE 0" {
 		d.Log.Debug("Tried to delete account, but none exists")
 		err := errors.New("no account found for given accountID")
 		return err
@@ -147,59 +148,69 @@ func (d Db) AccountGet(accountID string, APIKey string, name string) (Account, e
 	return account, nil
 }
 
-// func (d Db) AccountsGet() ([]Account, error) {
-// 	d.Log.Debug("Trying to get accounts", "name", name)
+func (d Db) AccountsGet() ([]Account, error) {
+	d.Log.Debug("Trying to get accounts")
 
-// 	var account Account
-// 	var searchParam string
-// 	accountSQL := "SELECT id, created, name, \"password\" FROM accounts WHERE "
-// 	if accountID != "" {
-// 		accountSQL = accountSQL + "id = $1"
-// 		searchParam = accountID
-// 	} else if APIKey != "" {
-// 		accountSQL = accountSQL + "\"apiKey\" = $1"
-// 		searchParam = APIKey
-// 	} else if name != "" {
-// 		accountSQL = accountSQL + "name = $1"
-// 		searchParam = name
-// 	} else {
-// 		d.Log.Debug("No get criteria entered, returning empty response without calling the database")
+	var accountFields = make(map[uuid.UUID]map[string][]string)
+	var accountIds = []string{}
+	var accountsToReturn = []Account{}
 
-// 		return Account{}, errors.New("no rows in result set")
-// 	}
+	accountSQL := "SELECT id, created, name FROM accounts"
 
-// 	accountErr := d.DbPool.QueryRow(context.Background(), accountSQL, searchParam).Scan(&account.ID, &account.Created, &account.Name, &account.Password)
-// 	if accountErr != nil {
-// 		if accountErr.Error() == "no rows in result set" {
-// 			d.Log.Debug("No account found", "accountID", accountID, "APIKey", len(APIKey))
-// 			return Account{}, accountErr
-// 		}
+	rows, err := d.DbPool.Query(context.Background(), accountSQL)
+	if err != nil {
+		d.Log.Error("Error executing SELECT query for accounts", "err", err.Error())
+		return []Account{}, err
+	}
 
-// 		d.Log.Error("Database error when fetching account", "err", accountErr.Error(), "accountID", accountID, "APIKey", len(APIKey))
-// 		return Account{}, accountErr
-// 	}
+	for rows.Next() {
+		values, err := rows.Values()
+		if err != nil {
+			d.Log.Error("Error while iterating accounts dataset", "err", err.Error())
+			return []Account{}, err
+		}
 
-// 	fieldsSQL := "SELECT name, value FROM \"accountsFields\" WHERE \"accountId\" = $1"
-// 	rows, fieldsErr := d.DbPool.Query(context.Background(), fieldsSQL, account.ID)
-// 	if fieldsErr != nil {
-// 		d.Log.Error("Database error when fetching account fields", "err", accountErr.Error(), "accountID", accountID, "APIKey", len(APIKey))
-// 		return Account{}, fieldsErr
-// 	}
+		accountIds = append(accountIds, values[0].(uuid.UUID).String())
+		accountsToReturn = append(accountsToReturn, Account{
+			ID:      values[0].(uuid.UUID),
+			Created: values[1].(time.Time),
+			Name:    values[2].(string),
+		})
+	}
 
-// 	account.Fields = make(map[string][]string)
-// 	for rows.Next() {
-// 		var name string
-// 		var value []string
-// 		err := rows.Scan(&name, &value)
-// 		if err != nil {
-// 			d.Log.Error("Could not get name or value from database row", "err", err.Error(), "accountID", accountID, "APIKey", len(APIKey))
-// 			return Account{}, err
-// 		}
-// 		account.Fields[name] = value
-// 	}
+	d.Log.Debug("Accounts retrieved from db", "numAccounts", len(accountsToReturn))
 
-// 	return account, nil
-// }
+	fieldsSQL := "SELECT \"accountId\", name, value FROM \"accountsFields\" WHERE \"accountId\" = ANY ($1)"
+	rows, err = d.DbPool.Query(context.Background(), fieldsSQL, accountIds)
+	if err != nil {
+		d.Log.Error("Error executing SELECT query for accountFields", "err", err.Error())
+		return []Account{}, err
+	}
+
+	for rows.Next() {
+		var id uuid.UUID
+		var name string
+		var value []string
+		err = rows.Scan(&id, &name, &value)
+		if err != nil {
+			d.Log.Error("Could not get name or value from database row", "err", err.Error())
+			return []Account{}, err
+		}
+
+		_, found := accountFields[id]
+		if !found {
+			accountFields[id] = make(map[string][]string)
+		}
+
+		accountFields[id][name] = value
+	}
+
+	for idx, account := range accountsToReturn {
+		accountsToReturn[idx].Fields = accountFields[account.ID]
+	}
+
+	return accountsToReturn, nil
+}
 
 func (d Db) AccountUpdateFields(accountID string, fields []AccountCreateInputFields) (Account, error) {
 	d.Log.Context = []interface{}{

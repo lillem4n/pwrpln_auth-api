@@ -1,6 +1,7 @@
+import {} from 'dotenv/config';
+import crypto from 'crypto';
 import got from 'got';
 import jwt from 'jsonwebtoken'
-import setConfig from '../test-helpers/config.js';
 import test from 'tape';
 
 let adminJWT;
@@ -10,6 +11,7 @@ let userJWT;
 let userJWTString;
 const userName = 'test-tomte nöff #18';
 const password = 'lurpassare7½TUR';
+
 
 test('test-cases/01basic.js: Authing with configurated API KEY', async t => {
 	// Wrong API key
@@ -211,5 +213,61 @@ test('test-cases/01basic.js: Remove an account', async t => {
 		t.fail('Response status for GETing the account again should be 404');
 	} catch (err) {
 		t.equal(err.message, 'Response code 404 (Not Found)', 'Response status for GETing the account again should be 404');
+	}
+});
+
+test('test-cases/01basic.js: list accounts', async t => {
+	// Create three accounts we can have to test with
+	const users = [
+		{
+			fields: [{ name: 'role', values: ['user'] }],
+			name: crypto.randomUUID(),
+			password: crypto.randomUUID(),
+		},
+		{
+			fields: [{ name: 'role', values: ['user', 'field-surgeon'] }],
+			name: crypto.randomUUID(),
+			password: crypto.randomUUID(),
+		},
+		{
+			fields: [{ name: 'role', values: ['user'] }, { name: 'foo', values: ['bar']}],
+			name: crypto.randomUUID(),
+			password: crypto.randomUUID(),
+		},
+	];
+
+	for (const [idx, user] of Object.entries(users)) {
+		const res = await got.post(`${process.env.AUTH_URL}/accounts`, {
+			headers: { 'Authorization': `bearer ${adminJWTString}`},
+			json: user,
+			responseType: 'json',
+		});
+		users[idx].id = res.body.id;
+	}
+
+	// List accounts
+	const res = await got.get(`${process.env.AUTH_URL}/accounts`, {
+		headers: { 'Authorization': `bearer ${adminJWTString}`},
+		responseType: 'json',
+	});
+
+	let foundAccounts = 0
+	for (const account of res.body) {
+		for (const user of users) {
+			if (user.id === account.id) {
+				foundAccounts++;
+			}
+		}
+	}
+
+	t.equal(foundAccounts, 3, 'Expected 3 accounts to be found, found: ' + foundAccounts);
+
+	// Clean up our test accounts
+	for (const [idx, user] of Object.entries(users)) {
+		await got.delete(`${process.env.AUTH_URL}/accounts/${user.id}`, {
+			headers: { 'Authorization': `bearer ${adminJWTString}`},
+			json: user,
+			responseType: 'json',
+		});
 	}
 });

@@ -61,21 +61,15 @@ func (h Handlers) AccountGet(c *fiber.Ctx) error {
 // @Failure 500 {object} []ResJSONError
 // @Router /accounts [get]
 func (h Handlers) AccountsGet(c *fiber.Ctx) error {
-	accountID := c.Params("accountID")
-
 	authErr := h.RequireAdminRole(c)
 	if authErr != nil {
 		return c.Status(403).JSON([]ResJSONError{{Error: authErr.Error()}})
 	}
 
-	account, accountErr := h.Db.AccountGet(accountID, "", "")
-	if accountErr != nil {
-		if accountErr.Error() == "no rows in result set" {
-			return c.Status(404).JSON([]ResJSONError{{Error: "No account found for given accountID"}})
-		} else {
-			return c.Status(500).JSON([]ResJSONError{{Error: accountErr.Error()}})
-		}
+	accounts, accountsErr := h.Db.AccountsGet()
+	if accountsErr != nil {
+		return c.Status(500).JSON([]ResJSONError{{Error: accountsErr.Error()}})
 	}
 
-	return c.JSON(account)
+	return c.JSON(accounts)
 }

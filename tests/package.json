@@ -10,11 +10,11 @@
   "author": "Lilleman",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "16.0.3",
-    "got": "12.6.0",
-    "jsonwebtoken": "9.0.0",
-    "tap-spec": "5.0.0",
-    "tape": "5.6.3",
+    "dotenv": "16.4.2",
+    "got": "14.2.0",
+    "jsonwebtoken": "9.0.2",
+    "tap-spec": "2.2.2",
+    "tape": "5.7.4",
     "tape-es": "1.2.17"
   }
 }

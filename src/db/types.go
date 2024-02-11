@@ -5,7 +5,7 @@ import (
 
 	"gitea.larvit.se/pwrpln/go_log"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Account is an account as represented in the database
